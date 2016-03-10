@@ -1,3 +1,7 @@
+# application
+public/assets/scss/**/*.css
+public/assets/scss/**/*.css.map
+
 # npm
 node_modules/
 
