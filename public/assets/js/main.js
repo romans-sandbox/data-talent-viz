@@ -17,7 +17,7 @@ tweetPackChart = function() {
 
   var svg, mainGroup;
   var pack, packNodes;
-  var itemsSel, itemsEnter, itemCircles;
+  var itemsSel;
 
   // sample data
   var data = [
@@ -40,6 +40,26 @@ tweetPackChart = function() {
       value: 678
     }
   ];
+  var data2 = [
+    {
+      value: 100
+    },
+    {
+      value: 200
+    },
+    {
+      value: 300
+    },
+    {
+      value: 400
+    },
+    {
+      value: 500
+    },
+    {
+      value: 600
+    }
+  ];
 
   function preparePack() {
     pack = d3.layout.pack()
@@ -50,12 +70,11 @@ tweetPackChart = function() {
 
     packNodes = pack.nodes({children: data});
 
-    itemsSel = mainGroup.selectAll('circle')
+    itemsSel = mainGroup.selectAll('circle.item')
       .data(packNodes);
 
-    itemsEnter = itemsSel.enter();
-
-    itemCircles = itemsEnter.append('circle')
+    itemsSel.enter()
+      .append('circle')
       .attr('class', function(d) {
         return d.children ? 'item' : 'item leaf';
       })
@@ -68,6 +87,26 @@ tweetPackChart = function() {
       .attr('r', function(d) {
         return d.r
       });
+
+    svg.on('click', function() {
+      console.log('click');
+
+      packNodes = pack.nodes({children: data2});
+
+      itemsSel = mainGroup.selectAll('circle')
+        .data(packNodes);
+
+      itemsSel
+        .attr('cx', function(d) {
+          return d.x
+        })
+        .attr('cy', function(d) {
+          return d.y
+        })
+        .attr('r', function(d) {
+          return d.r
+        });
+    });
   }
 
   module.run = function() {
