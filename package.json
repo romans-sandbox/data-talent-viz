@@ -1,0 +1,19 @@
+{
+  "name": "romans-data-talent-viz",
+  "description": "nullmighty Data Visualisation solution for Data Talent Scotland 2016.",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "author": "nullmighty <hello@nullmighty.com>",
+  "contributors": [
+    {
+      "name": "romans",
+      "email": "romans.dev@gmail.com"
+    }
+  ],
+  "dependencies": {
+  },
+  "engines": {
+    "node": "^4.2.1"
+  }
+}
