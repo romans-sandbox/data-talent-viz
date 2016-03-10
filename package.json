@@ -6,13 +6,10 @@
   "license": "UNLICENSED",
   "author": "nullmighty <hello@nullmighty.com>",
   "contributors": [
-    {
-      "name": "romans",
-      "email": "romans.dev@gmail.com"
-    }
+    "romans <romans.dev@gmail.com>"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
+  "devDependencies": {},
   "engines": {
     "node": "^4.2.1"
   }
