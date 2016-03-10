@@ -1,0 +1,13 @@
+$alpha: #fff;
+$beta: #000;
+
+svg.tweet-pack-chart {
+  fill: none;
+
+  circle.item {
+    &.leaf {
+      stroke: $beta;
+      stroke-width: 1px;
+    }
+  }
+}

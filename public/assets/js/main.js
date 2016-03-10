@@ -20,96 +20,35 @@ tweetPackChart = function() {
   var itemsSel, itemsEnter, itemCircles;
 
   // sample data
-  var data = {
-    "t": "0",
-    "children": [
-      {
-        "t": "00",
-        "value": 2
-      },
-      {
-        "t": "01",
-        "children": [
-          {
-            "t": "010",
-            "value": 1
-          },
-          {
-            "t": "011",
-            "value": 1
-          },
-          {
-            "t": "012",
-            "value": 1
-          },
-          {
-            "t": "013",
-            "value": 1
-          }
-        ]
-      },
-      {
-        "t": "02",
-        "children": [
-          {
-            "t": "020",
-            "value": 2
-          },
-          {
-            "t": "021",
-            "value": 1
-          },
-          {
-            "t": "022",
-            "value": 1
-          },
-          {
-            "t": "023",
-            "value": 1
-          },
-          {
-            "t": "024",
-            "value": 1
-          },
-          {
-            "t": "025",
-            "value": 2
-          }
-        ]
-      },
-      {
-        "t": "03",
-        "children": [
-          {
-            "t": "030",
-            "value": 2
-          },
-          {
-            "t": "031",
-            "value": 2
-          },
-          {
-            "t": "032",
-            "value": 2
-          },
-          {
-            "t": "033",
-            "value": 2
-          }
-        ]
-      },
-      {
-        "t": "04",
-        "value": 5
-      }
-    ]
-  };
+  var data = [
+    {
+      value: 123
+    },
+    {
+      value: 234
+    },
+    {
+      value: 345
+    },
+    {
+      value: 456
+    },
+    {
+      value: 567
+    },
+    {
+      value: 678
+    }
+  ];
 
   function preparePack() {
     pack = d3.layout.pack()
-      .size([availWidth, availHeight]);
+      .size([availWidth, availHeight])
+      .value(function(d) {
+        return d.value;
+      });
 
-    packNodes = pack.nodes(data);
+    packNodes = pack.nodes({children: data});
 
     itemsSel = mainGroup.selectAll('circle')
       .data(packNodes);
@@ -117,6 +56,9 @@ tweetPackChart = function() {
     itemsEnter = itemsSel.enter();
 
     itemCircles = itemsEnter.append('circle')
+      .attr('class', function(d) {
+        return d.children ? 'item' : 'item leaf';
+      })
       .attr('cx', function(d) {
         return d.x
       })
@@ -125,11 +67,7 @@ tweetPackChart = function() {
       })
       .attr('r', function(d) {
         return d.r
-      })
-      .attr('stroke', 'black')
-      .attr('stroke-width', '1')
-      .attr('fill', 'white');
-
+      });
   }
 
   module.run = function() {
