@@ -1,4 +1,4 @@
-tweetPackChart = function() {
+var tweetPackChart = function() {
   var module = {};
 
   var width = 500;
@@ -124,4 +124,52 @@ tweetPackChart = function() {
   return module;
 }();
 
+var tweetsClient = function() {
+  var module = {};
+
+  var socket = null;
+
+  // cached queries
+  var v = {};
+
+  v.status = document.querySelector('#status');
+
+  module.run = function() {
+    if ('io' in window) {
+      // connect to the server
+      socket = io.connect('/');
+
+      // listen to new tweets
+      socket.on('new tweet', function(tweet) {
+        console.log(tweet);
+      });
+
+      // listen to old tweets
+      socket.on('latest tweets', function(tweets) {
+        var i;
+
+        tweets.statuses = tweets.statuses.reverse();
+
+        for (i = 0; i < tweets.statuses.length; i++) {
+          console.log(tweets.statuses[i]);
+        }
+      });
+
+      socket.on('all tweets', function(tweets) {
+        console.log(tweets);
+      });
+
+      socket.on('connected', function(req) {
+        v.status.innerHTML = 'Listening to tweets matching ' + req.tracking + '...';
+
+        // tell the server to start the streaming
+        socket.emit('start stream');
+      });
+    }
+  };
+
+  return module;
+}();
+
 tweetPackChart.run();
+tweetsClient.run();

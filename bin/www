@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('test:server');
 var http = require('http');
+var io = require('socket.io');
+var Twitter = require('twitter');
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +22,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+io = io(server);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -88,3 +91,191 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+/**
+ * Tweet tweet.
+ */
+
+var tweets = {};
+
+var twitterClient = new Twitter({
+  consumer_key: "YWypvQAD1s9qPkUvZCpCMZDFj",
+  consumer_secret: "DZqqE3ijVmf8rEWqfptu9j5M6YmbCYt3hVWre50aS8zxtGGFxi",
+  access_token_key: "707901665668689920-2MWWWgQZmhF18Rteo61aCM3Qjiccf9O",
+  access_token_secret: "ws3ZcRkAToLPbekAXuxt6sqNYICvGO111T6cQYm67KyrQ"
+});
+
+var stream = null;
+var track = "#scot10000";
+var users = [];
+var latestTweets = null;
+var allTweets = {};
+var updateTweetsInterval;
+
+function addTweet(socket, tweet, update) {
+  var exists;
+
+  exists = tweet.id_str in allTweets;
+
+  if (exists && update || !exists) {
+    allTweets[tweet.id_str] = tweet;
+
+    if (socket) {
+      socket.broadcast.emit('all tweets', allTweets);
+      socket.emit('all tweets', allTweets);
+    }
+  }
+}
+
+function updateTweets(socket) {
+  var ids = [], i;
+
+  for (i in allTweets) {
+    if (allTweets.hasOwnProperty(i)) {
+      ids.push(i);
+    }
+  }
+
+  if (ids.length) {
+    console.log('Requesting tweet updates...');
+
+    twitterClient.post(
+      'statuses/lookup',
+      {
+        id: ids.join(','),
+        map: true
+      },
+      function(error, data, response) {
+        var i;
+
+        if (data && 'id' in data) {
+          console.log('Tweet updates received.');
+
+          for (i in data.id) {
+            if (data.id.hasOwnProperty(i)) {
+              addTweet(socket, data.id[i], true);
+            }
+          }
+        } else {
+          console.log('! Empty response when requesting tweet updates.');
+        }
+      }
+    );
+  }
+}
+
+function logConnectedUsers() {
+  console.log(users.length + ' users connected at this moment' + (users.length ? ': ' + users.join(', ') : '.'));
+}
+
+function disconnect() {
+  if (stream) {
+    console.log('! No users connected. Streaming destroyed. Application state reset.');
+
+    // if there are no users connected we destroy the stream.
+    stream.destroy();
+    stream = null;
+    latestTweets = null;
+    allTweets = {};
+    clearInterval(updateTweetsInterval);
+
+    console.log(new Array(80).join('-'));
+  }
+}
+
+io.sockets.on("connection", function(socket) {
+  if (users.indexOf(socket.id) === -1) {
+    console.log('User connected: ' + socket.id);
+    users.push(socket.id);
+  }
+
+  logConnectedUsers();
+
+  socket.on("start stream", function() {
+    // the stream will be started only when the 1st user arrives.
+    if (stream === null) {
+      console.log('Initiating streaming...');
+      twitterClient.stream("statuses/filter", {
+        track: track
+      }, function(s) {
+        console.log('Streaming initiated.');
+
+        stream = s;
+        stream.on("data", function(tweet) {
+          // only broadcast when users are online.
+          if (users.length > 0) {
+            console.log('New tweet!');
+
+            // this emits the signal to all users but the one that started the stream.
+            socket.broadcast.emit("new tweet", tweet);
+            // this emits the signal to the user that started the stream.
+            socket.emit("new tweet", tweet);
+
+            addTweet(socket, tweet);
+          } else {
+            disconnect();
+          }
+        });
+        stream.on('error', function(error) {
+          console.log('! Streaming error.', error);
+        });
+
+        console.log('Requesting previously posted tweets...');
+        twitterClient.get('search/tweets', {
+          q: track,
+          result_type: 'recent'
+        }, function(error, tweets, response) {
+          var i;
+
+          if (tweets && !error) {
+            console.log('Previously posted tweets received.');
+
+            latestTweets = tweets;
+
+            for (i = 0; i < tweets.statuses.length; i++) {
+              addTweet(socket, tweets.statuses[i]);
+            }
+
+            console.log('Previously posted tweets emitted.');
+
+            socket.broadcast.emit('latest tweets', tweets);
+            socket.emit('latest tweets', tweets);
+          } else if (!tweets) {
+            console.log('! No previously posted tweets found.');
+          } else {
+            console.log('! Could not retrieve previously posted tweets.');
+          }
+        });
+
+        updateTweetsInterval = setInterval(function() {
+          updateTweets(socket);
+        }, 20 * 1000);
+      });
+    } else {
+      console.log('Previously posted tweets emitted.');
+
+      socket.broadcast.emit('latest tweets', latestTweets);
+      socket.emit('latest tweets', latestTweets);
+    }
+  });
+
+  socket.on("disconnect", function(o) {
+    // find the user in the array.
+    var index = users.indexOf(socket.id);
+
+    if (index !== -1) {
+      console.log('User ' + users[index] + ' disconnected.');
+      users.splice(index, 1);
+    }
+
+    logConnectedUsers();
+
+    if (!users.length) {
+      disconnect();
+    }
+  });
+
+  socket.emit("connected", {
+    tracking: track
+  });
+});
