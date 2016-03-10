@@ -8,9 +8,12 @@
   "contributors": [
     "romans <romans.dev@gmail.com>"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.13.4"
+  },
   "devDependencies": {},
   "engines": {
     "node": "^4.2.1"
-  }
+  },
+  "main": "main.js"
 }
