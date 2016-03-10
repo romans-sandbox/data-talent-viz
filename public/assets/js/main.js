@@ -10,7 +10,11 @@ var tweetPackChart = function() {
     left: 1
   };
 
-  var options = {};
+  var options = {
+    durations: {
+      itemMorph: 500
+    }
+  };
 
   var availWidth = width - margins.left - margins.right;
   var availHeight = height - margins.top - margins.bottom;
@@ -19,59 +23,42 @@ var tweetPackChart = function() {
   var pack, packNodes;
   var itemsSel;
 
-  // sample data
-  var data = [
-    {
-      value: 123
-    },
-    {
-      value: 234
-    },
-    {
-      value: 345
-    },
-    {
-      value: 456
-    },
-    {
-      value: 567
-    },
-    {
-      value: 678
-    }
-  ];
-  var data2 = [
-    {
-      value: 100
-    },
-    {
-      value: 200
-    },
-    {
-      value: 300
-    },
-    {
-      value: 400
-    },
-    {
-      value: 500
-    },
-    {
-      value: 600
-    }
-  ];
+  module.run = function() {
+    svg = d3.select('#tweet-pack-chart')
+      .attr('width', width)
+      .attr('height', height);
 
-  function preparePack() {
+    mainGroup = svg.append('g')
+      .attr('class', 'main-group')
+      .attr('transform', 'translate(' + margins.left + ', ' + margins.top + ')');
+
     pack = d3.layout.pack()
       .size([availWidth, availHeight])
       .value(function(d) {
         return d.value;
-      });
+      })
+      .padding(10)
+      .sort(null);
+  };
 
+  module.update = function(data) {
     packNodes = pack.nodes({children: data});
 
-    itemsSel = mainGroup.selectAll('circle.item')
+    itemsSel = mainGroup.selectAll('circle')
       .data(packNodes);
+
+    itemsSel
+      .transition()
+      .duration(options.durations.itemMorph)
+      .attr('cx', function(d) {
+        return d.x
+      })
+      .attr('cy', function(d) {
+        return d.y
+      })
+      .attr('r', function(d) {
+        return d.r
+      });
 
     itemsSel.enter()
       .append('circle')
@@ -84,41 +71,20 @@ var tweetPackChart = function() {
       .attr('cy', function(d) {
         return d.y
       })
+      .attr('r', '0')
+      .transition()
+      .duration(options.durations.itemMorph)
       .attr('r', function(d) {
         return d.r
       });
 
-    svg.on('click', function() {
-      console.log('click');
-
-      packNodes = pack.nodes({children: data2});
-
-      itemsSel = mainGroup.selectAll('circle')
-        .data(packNodes);
-
-      itemsSel
-        .attr('cx', function(d) {
-          return d.x
-        })
-        .attr('cy', function(d) {
-          return d.y
-        })
-        .attr('r', function(d) {
-          return d.r
-        });
-    });
-  }
-
-  module.run = function() {
-    svg = d3.select('#tweet-pack-chart')
-      .attr('width', width)
-      .attr('height', height);
-
-    mainGroup = svg.append('g')
-      .attr('class', 'main-group')
-      .attr('transform', 'translate(' + margins.left + ', ' + margins.top + ')');
-
-    preparePack();
+    itemsSel.exit()
+      .transition()
+      .duration(options.durations.itemMorph)
+      .attr('r', '0')
+      .each('end', function() {
+        d3.select(this).remove();
+      });
   };
 
   return module;
@@ -141,7 +107,7 @@ var tweetsClient = function() {
 
       // listen to new tweets
       socket.on('new tweet', function(tweet) {
-        console.log(tweet);
+        // console.log(tweet);
       });
 
       // listen to old tweets
@@ -151,7 +117,7 @@ var tweetsClient = function() {
         tweets.statuses = tweets.statuses.reverse();
 
         for (i = 0; i < tweets.statuses.length; i++) {
-          console.log(tweets.statuses[i]);
+          // console.log(tweets.statuses[i]);
         }
       });
 
@@ -173,3 +139,24 @@ var tweetsClient = function() {
 
 tweetPackChart.run();
 tweetsClient.run();
+setInterval(function() {
+  tweetPackChart.update(
+    [
+      {
+        value: Math.random()
+      },
+      {
+        value: Math.random()
+      },
+      {
+        value: Math.random()
+      },
+      {
+        value: Math.random()
+      },
+      {
+        value: Math.random()
+      }
+    ]
+  );
+}, 1000);

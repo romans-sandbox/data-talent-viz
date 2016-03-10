@@ -169,18 +169,16 @@ function logConnectedUsers() {
 }
 
 function disconnect() {
-  if (stream) {
-    console.log('! No users connected. Streaming destroyed. Application state reset.');
+  console.log('! No users connected. Streaming destroyed. Application state reset.');
 
-    // if there are no users connected we destroy the stream.
-    stream.destroy();
-    stream = null;
-    latestTweets = null;
-    allTweets = {};
-    clearInterval(updateTweetsInterval);
+  // if there are no users connected we destroy the stream.
+  stream.destroy();
+  stream = null;
+  latestTweets = null;
+  allTweets = {};
+  clearInterval(updateTweetsInterval);
 
-    console.log(new Array(80).join('-'));
-  }
+  console.log(new Array(80).join('-'));
 }
 
 io.sockets.on("connection", function(socket) {
