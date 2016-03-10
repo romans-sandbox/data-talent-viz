@@ -95,10 +95,28 @@ var tweetsClient = function() {
 
   var socket = null;
 
-  // cached queries
-  var v = {};
+  function parseTweets(tweets) {
+    var data = [], id;
 
-  v.status = document.querySelector('#status');
+    if (tweets) {
+      for (id in tweets) {
+        if (tweets.hasOwnProperty(id)) {
+          data.push(
+            {
+              id: tweets[id].id_str,
+              value: tweets[id].favorite_count + tweets[id].retweet_count + 1
+            }
+          );
+        }
+      }
+    }
+
+    if (!data.length) {
+      return null;
+    }
+
+    return data;
+  }
 
   module.run = function() {
     if ('io' in window) {
@@ -122,11 +140,19 @@ var tweetsClient = function() {
       });
 
       socket.on('all tweets', function(tweets) {
-        console.log(tweets);
+        var data;
+
+        data = parseTweets(tweets);
+
+        if (data) {
+          tweetPackChart.update(data);
+        } else {
+          console.log('Could not parse all tweets.');
+        }
       });
 
       socket.on('connected', function(req) {
-        v.status.innerHTML = 'Listening to tweets matching ' + req.tracking + '...';
+        console.log('Listening to tweets matching ' + req.tracking + '...');
 
         // tell the server to start the streaming
         socket.emit('start stream');
@@ -139,24 +165,3 @@ var tweetsClient = function() {
 
 tweetPackChart.run();
 tweetsClient.run();
-setInterval(function() {
-  tweetPackChart.update(
-    [
-      {
-        value: Math.random()
-      },
-      {
-        value: Math.random()
-      },
-      {
-        value: Math.random()
-      },
-      {
-        value: Math.random()
-      },
-      {
-        value: Math.random()
-      }
-    ]
-  );
-}, 1000);
