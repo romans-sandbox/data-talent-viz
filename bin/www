@@ -127,6 +127,15 @@ function addTweet(socket, tweet, update) {
   }
 }
 
+function removeTweet(socket, tweetId) {
+  delete allTweets[tweetId];
+
+  if (socket) {
+    socket.broadcast.emit('all tweets', allTweets);
+    socket.emit('all tweets', allTweets);
+  }
+}
+
 function updateTweets(socket) {
   var ids = [], i;
 
@@ -153,7 +162,13 @@ function updateTweets(socket) {
 
           for (i in data.id) {
             if (data.id.hasOwnProperty(i)) {
-              addTweet(socket, data.id[i], true);
+              if (data.id[i] !== null) {
+                // probably updated
+                addTweet(socket, data.id[i], true);
+              } else {
+                // deleted or unavailable
+                removeTweet(socket, i);
+              }
             }
           }
         } else {

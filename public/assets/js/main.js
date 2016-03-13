@@ -1,8 +1,8 @@
 var tweetPackChart = function() {
   var module = {};
 
-  var width = 500;
-  var height = 500;
+  var width = window.innerWidth;
+  var height = window.innerHeight;
   var margins = {
     top: 1,
     right: 1,
@@ -19,14 +19,16 @@ var tweetPackChart = function() {
   var availWidth = width - margins.left - margins.right;
   var availHeight = height - margins.top - margins.bottom;
 
-  var svg, mainGroup;
+  var svg, mainGroup, defs;
   var pack, packNodes;
-  var itemsSel;
+  var itemsSel, itemContainers;
 
   module.run = function() {
     svg = d3.select('#tweet-pack-chart')
       .attr('width', width)
       .attr('height', height);
+
+    defs = svg.append('defs');
 
     mainGroup = svg.append('g')
       .attr('class', 'main-group')
@@ -44,7 +46,7 @@ var tweetPackChart = function() {
   module.update = function(data) {
     packNodes = pack.nodes({children: data});
 
-    itemsSel = mainGroup.selectAll('circle')
+    itemsSel = mainGroup.selectAll('g.item-container circle.item')
       .data(packNodes);
 
     itemsSel
@@ -60,7 +62,14 @@ var tweetPackChart = function() {
         return d.r
       });
 
-    itemsSel.enter()
+    itemContainers = itemsSel.enter()
+      .append('g')
+      .attr('class', 'item-container')
+      .on('click', function(d) {
+        alert(d.text);
+      });
+
+    itemContainers
       .append('circle')
       .attr('class', function(d) {
         return d.children ? 'item' : 'item leaf';
@@ -78,12 +87,127 @@ var tweetPackChart = function() {
         return d.r
       });
 
+    itemContainers.each(function(d, i) {
+      if (d.id) {
+        // create
+
+        defs
+          .append('clipPath')
+          .attr('id', 'item-clip-' + d.id)
+          .append('circle')
+          .attr('cx', function() {
+            return d.x
+          })
+          .attr('cy', function() {
+            return d.y
+          })
+          .attr('r', '0')
+          .transition()
+          .duration(options.durations.itemMorph)
+          .attr('r', function() {
+            return d.r
+          });
+
+        d3.select(this)
+          .append('image')
+          .attr('xlink:href', d.image)
+          .attr('clip-path', 'url(#item-clip-' + d.id + ')')
+          .attr('x', function() {
+            return d.x;
+          })
+          .attr('y', function() {
+            return d.y;
+          })
+          .attr('width', '0')
+          .attr('height', '0')
+          .transition()
+          .duration(options.durations.itemMorph)
+          .attr('x', function() {
+            return d.x - d.r;
+          })
+          .attr('y', function() {
+            return d.y - d.r;
+          })
+          .attr('width', function() {
+            return d.r * 2;
+          })
+          .attr('height', function() {
+            return d.r * 2;
+          });
+      }
+    });
+
+    mainGroup.selectAll('g.item-container')
+      .data(packNodes)
+      .each(function(d) {
+        // update
+
+        if (d.id) {
+          defs.select('#item-clip-' + d.id)
+            .select('circle')
+            .transition()
+            .duration(options.durations.itemMorph)
+            .attr('cx', function() {
+              return d.x
+            })
+            .attr('cy', function() {
+              return d.y
+            })
+            .attr('r', function() {
+              return d.r
+            });
+
+          d3.select(this)
+            .select('image')
+            .transition()
+            .duration(options.durations.itemMorph)
+            .attr('x', function() {
+              return d.x - d.r;
+            })
+            .attr('y', function() {
+              return d.y - d.r;
+            })
+            .attr('width', function() {
+              return d.r * 2;
+            })
+            .attr('height', function() {
+              return d.r * 2;
+            });
+        }
+      })
+      .exit()
+      .each(function(d) {
+        // exit
+
+        defs.select('#item-clip-' + d.id)
+          .select('circle')
+          .transition()
+          .duration(options.durations.itemMorph)
+          .attr('r', '0')
+          .each('end', function() {
+            d3.select(this.parentNode).remove();
+          });
+
+        d3.select(this)
+          .select('image')
+          .transition()
+          .duration(options.durations.itemMorph)
+          .attr('x', function() {
+            return d.x;
+          })
+          .attr('y', function() {
+            return d.y;
+          })
+          .attr('width', '0')
+          .attr('height', '0');
+      });
+
     itemsSel.exit()
       .transition()
       .duration(options.durations.itemMorph)
       .attr('r', '0')
-      .each('end', function() {
-        d3.select(this).remove();
+      .each('end', function(d) {
+        d3.select(this.parentNode).remove();
       });
   };
 
@@ -104,7 +228,9 @@ var tweetsClient = function() {
           data.push(
             {
               id: tweets[id].id_str,
-              value: tweets[id].favorite_count + tweets[id].retweet_count + 1
+              value: tweets[id].favorite_count + tweets[id].retweet_count + 1,
+              image: tweets[id].user.profile_image_url_https.replace('_normal', ''), // original size
+              text: tweets[id].text
             }
           );
         }
