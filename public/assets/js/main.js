@@ -286,8 +286,68 @@ var tweetsClient = function() {
     }
   };
 
+  module.run2 = function() {
+    if ('io' in window) {
+      // connect to the server
+      socket = io.connect('/');
+
+      // listen to new tweets
+      socket.on('new tweet', function(tweet) {
+        tweetPresenter.present(tweet);
+      });
+
+      socket.on('connected', function(req) {
+        console.log('Listening to tweets matching ' + req.tracking + '...');
+
+        // tell the server to start the streaming
+        socket.emit('start stream');
+      });
+    }
+  };
+
   return module;
 }();
 
-tweetPackChart.run();
-tweetsClient.run();
+var tweetPresenter = function() {
+  var module = {};
+
+  var queue = [];
+  var busy = false;
+
+  var template = '<div class="tweetie"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div>';
+
+  var options = {
+    delay: 3000
+  };
+
+  var v = {};
+
+  v.tweeties = document.querySelector('#tweeties');
+
+  window.t = queue;
+
+  module.present = function(tweet) {
+    if (busy) {
+      queue.push(tweet);
+    } else {
+      v.tweeties.innerHTML = template
+        .replace('%profile-name', tweet.user.name)
+        .replace('%screen-name', tweet.user.screen_name)
+        .replace('%text', tweet.text)
+        .replace('%image', tweet.user.profile_image_url.replace('_normal', '_bigger'));
+
+      busy = true;
+
+      window.setTimeout(function() {
+        v.tweeties.innerHTML = '';
+        busy = false;
+
+        if (queue.length) {
+          module.present(queue.pop());
+        }
+      }, options.delay);
+    }
+  };
+
+  return module;
+}();

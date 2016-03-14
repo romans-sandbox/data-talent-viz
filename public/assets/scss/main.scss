@@ -2,6 +2,16 @@ $alpha: #fff;
 $beta: #000;
 $gamma: #ccc;
 
+$t1: #e1e8ed;
+$t2: #292f33;
+$t3: #8899a6;
+
+body {
+  overflow: hidden;
+  margin: 0;
+  font: 16px 'Helvetica Neue', Helvetica, sans-serif;
+}
+
 svg.tweet-pack-chart {
   fill: none;
 
@@ -10,5 +20,53 @@ svg.tweet-pack-chart {
       stroke: $gamma;
       stroke-width: 5px;
     }
+  }
+}
+
+div.tweetie {
+  border: 1px solid $t1;
+  border-radius: 5px;
+  padding: 30px 40px;
+  max-width: 500px;
+  margin: 0 auto;
+
+  div.top {
+    overflow: hidden;
+    margin-bottom: 15px;
+
+    div.image {
+      width: 48px;
+      height: 48px;
+      background: $t1;
+      margin-right: 10px;
+      float: left;
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    div.profile-name {
+      font-weight: 600;
+      font-size: 1.2em;
+      margin-top: 3px;
+      line-height: 1.25;
+      padding-top: 2px;
+      color: $t2;
+    }
+
+    div.screen-name {
+      color: $t3;
+      font-size: 0.85em;
+    }
+  }
+
+  div.text {
+    color: $t2;
+    font-size: 1.8em;
+    font-weight: 300;
+    line-height: 32px;
+    letter-spacing: 0.01em;
   }
 }

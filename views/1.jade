@@ -3,3 +3,8 @@ extends layout
 block content
   div
     svg#tweet-pack-chart.tweet-pack-chart(xmlns="http://www.w3.org/2000/svg")
+
+block post-js
+  script.
+    tweetPackChart.run();
+    tweetsClient.run();
