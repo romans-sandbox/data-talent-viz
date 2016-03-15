@@ -107,6 +107,7 @@ div.tweetie {
 
 div.logotype {
   position: absolute;
+  z-index: 1000;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
