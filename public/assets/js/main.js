@@ -16,7 +16,7 @@ d3.selection.prototype.moveToBack = function() {
 var tweetPack = function() {
   var module = {};
 
-  var diameter = 800;
+  var diameter = 740;
   var margins = {
     top: 20,
     right: 20,
@@ -174,6 +174,8 @@ var tweetsClient = function() {
 
   var socket = null;
 
+  var topThreeTweets = [];
+
   function parseTweets(tweets) {
     var data = [], i;
 
@@ -185,7 +187,9 @@ var tweetsClient = function() {
             id: tweets[i].id_str,
             value: tweets[i].score,
             image: tweets[i].user.profile_image_url_https.replace('_normal', ''), // original size
-            text: tweets[i].text
+            text: tweets[i].text,
+            user_name: tweets[i].user.name,
+            screen_name: tweets[i].user.screen_name
           }
         );
       }
@@ -209,6 +213,7 @@ var tweetsClient = function() {
         data = parseTweets(tweets);
 
         if (data) {
+          topThreeTweets = data.slice(0, 3);
           tweetPack.update(data);
         } else {
           console.log('Could not parse all tweets.');
@@ -243,6 +248,10 @@ var tweetsClient = function() {
     }
   };
 
+  module.getTopThreeTweets = function() {
+    return topThreeTweets;
+  };
+
   return module;
 }();
 
@@ -255,7 +264,7 @@ var tweetPresenter = function() {
   var template = '<div class="tweetie"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div>';
 
   var options = {
-    delay: 3000,
+    delay: 200000,
     fading: 500
   };
 
@@ -304,14 +313,24 @@ var topTweetsPresenter = function() {
 
   var options = {
     delay: 3000,
-    fading: 500
+    fading: 500,
+    retryAfter: 1000
   };
 
-  var current = 0;
+  var ordinalInfo = [
+    ['1', 'st'],
+    ['2', 'nd'],
+    ['3', 'rd']
+  ];
+
+  var top, current = 0;
 
   var v = {};
 
   v.topTweet = document.querySelector('#top-tweet-container');
+  v.topTweetOuter = document.querySelector('#top-tweets-outer');
+  v.topTweetOrdinalNumber = document.querySelector('#top-tweet-ordinal-number');
+  v.topTweetOrdinalIndicator = document.querySelector('#top-tweet-ordinal-indicator');
 
   function showNext() {
     var tweet;
@@ -320,19 +339,38 @@ var topTweetsPresenter = function() {
       current = 0;
     }
 
-    tweet = null; ///
+    top = tweetsClient.getTopThreeTweets();
+
+    if (current in top) {
+      tweet = top[current];
+    } else {
+      current = 0;
+
+      if (current in top) {
+        tweet = top[current];
+      } else {
+        window.setTimeout(function() {
+          showNext();
+        }, options.retryAfter);
+
+        return;
+      }
+    }
 
     v.topTweet.innerHTML = template
-      .replace('%profile-name', tweet.user.name)
-      .replace('%screen-name', tweet.user.screen_name)
+      .replace('%profile-name', tweet.user_name)
+      .replace('%screen-name', tweet.screen_name)
       .replace('%text', tweet.text)
-      .replace('%image', tweet.user.profile_image_url.replace('_normal', '_bigger'));
+      .replace('%image', tweet.image);
+
+    v.topTweetOrdinalNumber.innerHTML = ordinalInfo[current][0];
+    v.topTweetOrdinalIndicator.innerHTML = ordinalInfo[current][1];
 
     window.setTimeout(function() {
-      v.topTweet.classList.remove('invisible');
+      v.topTweetOuter.classList.remove('invisible');
 
       window.setTimeout(function() {
-        v.topTweet.classList.add('invisible');
+        v.topTweetOuter.classList.add('invisible');
 
         window.setTimeout(function() {
           v.topTweet.innerHTML = '';

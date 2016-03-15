@@ -16,11 +16,36 @@ body {
 
 div.top-tweets {
   position: absolute;
-  width: 480px;
-  height: 100%;
-  background: $gamma;
-  right: 0;
-  top: 0;
+  width: 500px;
+  right: 30px;
+  top: 25%;
+  transform: translateY(-25%);
+  transition: opacity $fading;
+  opacity: 1;
+
+  &.invisible {
+    opacity: 0;
+  }
+}
+
+div.top-tweet-container {
+
+}
+
+div.top-tweets-title {
+  text-align: center;
+  font-size: 2.5em;
+  margin-bottom: 40px;
+
+  span {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 1.5em;
+
+    sup {
+      font-size: 0.7em;
+    }
+  }
 }
 
 div.pack-outer {
@@ -79,6 +104,7 @@ div.tweetie {
   padding: 30px 40px;
   width: 500px;
   margin: 0 auto;
+  box-sizing: border-box;
 
   div.top {
     overflow: hidden;
@@ -119,6 +145,7 @@ div.tweetie {
     line-height: 32px;
     letter-spacing: 0.01em;
     word-wrap: break-word;
+    width: 420px;
   }
 }
 

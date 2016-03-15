@@ -3,10 +3,16 @@ extends layout
 block content
   div.pack-outer
     div#tweet-pack-cont.tweet-pack-cont
-  div.top-tweets
-    div placeholder top tweets
+  div#top-tweets-outer.top-tweets.invisible
+    div.top-tweets-title
+      span
+        span#top-tweet-ordinal-number 1
+        sup#top-tweet-ordinal-indicator st
+      | most popular tweet
+    div#top-tweet-container.top-tweet-container
 
 block post-js
   script.
     tweetPack.run();
     tweetsClient.run();
+    topTweetsPresenter.present();
