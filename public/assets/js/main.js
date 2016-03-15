@@ -175,6 +175,7 @@ var tweetsClient = function() {
   var socket = null;
 
   var topThreeTweets = [];
+  var allTweets;
 
   function parseTweets(tweets) {
     var data = [], i;
@@ -214,6 +215,7 @@ var tweetsClient = function() {
 
         if (data) {
           topThreeTweets = data.slice(0, 3);
+          allTweets = data;
           tweetPack.update(data);
         } else {
           console.log('Could not parse all tweets.');
@@ -250,6 +252,10 @@ var tweetsClient = function() {
 
   module.getTopThreeTweets = function() {
     return topThreeTweets;
+  };
+
+  module.getAllTweets = function() {
+    return allTweets;
   };
 
   return module;
