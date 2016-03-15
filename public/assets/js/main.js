@@ -182,7 +182,6 @@ var tweetsClient = function() {
 
     if (tweets) {
       for (i = 0; i < tweets.length; i++) {
-
         data.push(
           {
             id: tweets[i].id_str,
@@ -190,7 +189,8 @@ var tweetsClient = function() {
             image: tweets[i].user.profile_image_url_https.replace('_normal', ''), // original size
             text: tweets[i].text,
             user_name: tweets[i].user.name,
-            screen_name: tweets[i].user.screen_name
+            screen_name: tweets[i].user.screen_name,
+            media_url: tweets[i].entities && tweets[i].entities.media && tweets[i].entities.media.length ? tweets[i].entities.media[0].media_url_https : null
           }
         );
       }
@@ -267,7 +267,7 @@ var tweetPresenter = function() {
   var queue = [];
   var busy = false;
 
-  var template = '<div class="tweetie"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div>';
+  var template = '<div class="tweetie"><div class="inner"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div><div class="embedded-image">%embedded-image</div></div>';
 
   var options = {
     delay: 200000,
@@ -279,14 +279,27 @@ var tweetPresenter = function() {
   v.tweeties = document.querySelector('#tweeties');
 
   module.present = function(tweet) {
+    var content;
+
     if (busy) {
       queue.push(tweet);
     } else {
-      v.tweeties.innerHTML = template
+      content = template
         .replace('%profile-name', tweet.user.name)
         .replace('%screen-name', tweet.user.screen_name)
         .replace('%text', tweet.text)
         .replace('%image', tweet.user.profile_image_url.replace('_normal', '_bigger'));
+
+      if (tweet.entities && tweet.entities.media && tweet.entities.media.length) {
+        content = content.replace(
+          '%embedded-image',
+          '<img src="' + tweet.entities.media[0].media_url_https + '">'
+        );
+      } else {
+        content = content.replace('%embedded-image', '');
+      }
+
+      v.tweeties.innerHTML = content;
 
       busy = true;
 
@@ -315,7 +328,7 @@ var tweetPresenter = function() {
 var topTweetsPresenter = function() {
   var module = {};
 
-  var template = '<div class="tweetie"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div>';
+  var template = '<div class="tweetie"><div class="inner"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div><div class="embedded-image">%embedded-image</div></div>';
 
   var options = {
     delay: 3000,
@@ -339,7 +352,7 @@ var topTweetsPresenter = function() {
   v.topTweetOrdinalIndicator = document.querySelector('#top-tweet-ordinal-indicator');
 
   function showNext() {
-    var tweet;
+    var tweet, content;
 
     if (current > 2) {
       current = 0;
@@ -363,11 +376,22 @@ var topTweetsPresenter = function() {
       }
     }
 
-    v.topTweet.innerHTML = template
+    content = template
       .replace('%profile-name', tweet.user_name)
       .replace('%screen-name', tweet.screen_name)
       .replace('%text', tweet.text)
       .replace('%image', tweet.image);
+
+    if (tweet.media_url) {
+      content = content.replace(
+        '%embedded-image',
+        '<img src="' + tweet.media_url + '">'
+      );
+    } else {
+      content = content.replace('%embedded-image', '');
+    }
+
+    v.topTweet.innerHTML = content;
 
     v.topTweetOrdinalNumber.innerHTML = ordinalInfo[current][0];
     v.topTweetOrdinalIndicator.innerHTML = ordinalInfo[current][1];

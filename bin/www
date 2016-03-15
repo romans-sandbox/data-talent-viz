@@ -189,7 +189,8 @@ function updateTweets(socket) {
       'statuses/lookup',
       {
         id: ids.join(','),
-        map: true
+        map: true,
+        include_entities: true
       },
       function(error, data, response) {
         var i;
