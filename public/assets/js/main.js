@@ -1,13 +1,12 @@
 var tweetPackChart = function() {
   var module = {};
 
-  var width = window.innerWidth;
-  var height = window.innerHeight;
+  var diameter = 800;
   var margins = {
-    top: 1,
-    right: 1,
-    bottom: 1,
-    left: 1
+    top: 20,
+    right: 20,
+    bottom: 20,
+    left: 20
   };
 
   var options = {
@@ -16,8 +15,8 @@ var tweetPackChart = function() {
     }
   };
 
-  var availWidth = width - margins.left - margins.right;
-  var availHeight = height - margins.top - margins.bottom;
+  var availWidth = diameter - margins.left - margins.right;
+  var availHeight = diameter - margins.top - margins.bottom;
 
   var svg, mainGroup, defs;
   var pack, packNodes;
@@ -25,8 +24,8 @@ var tweetPackChart = function() {
 
   module.run = function() {
     svg = d3.select('#tweet-pack-chart')
-      .attr('width', width)
-      .attr('height', height);
+      .attr('width', diameter)
+      .attr('height', diameter);
 
     defs = svg.append('defs');
 
@@ -248,22 +247,6 @@ var tweetsClient = function() {
     if ('io' in window) {
       // connect to the server
       socket = io.connect('/');
-
-      // listen to new tweets
-      socket.on('new tweet', function(tweet) {
-        // console.log(tweet);
-      });
-
-      // listen to old tweets
-      socket.on('latest tweets', function(tweets) {
-        var i;
-
-        tweets.statuses = tweets.statuses.reverse();
-
-        for (i = 0; i < tweets.statuses.length; i++) {
-          // console.log(tweets.statuses[i]);
-        }
-      });
 
       socket.on('all tweets', function(tweets) {
         var data;

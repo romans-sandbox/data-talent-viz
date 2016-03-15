@@ -14,6 +14,22 @@ body {
   font: 16px 'Helvetica Neue', Helvetica, sans-serif;
 }
 
+div.top {
+  position: absolute;
+  width: 480px;
+  height: 100%;
+  background: $gamma;
+  right: 0;
+  top: 0;
+}
+
+div.pack {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 svg.tweet-pack-chart {
   fill: none;
 
