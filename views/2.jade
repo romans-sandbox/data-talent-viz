@@ -1,7 +1,12 @@
 extends layout
 
 block content
-  div#tweeties
+  div.hashtag-message
+    | use
+    span #sixnations
+    | when tweeting
+  div#tweeties.tweeties.invisible
+  div.logotype
 
 block post-js
   script.

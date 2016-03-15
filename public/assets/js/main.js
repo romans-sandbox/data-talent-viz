@@ -317,14 +317,13 @@ var tweetPresenter = function() {
   var template = '<div class="tweetie"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div>';
 
   var options = {
-    delay: 3000
+    delay: 3000,
+    fading: 500
   };
 
   var v = {};
 
   v.tweeties = document.querySelector('#tweeties');
-
-  window.t = queue;
 
   module.present = function(tweet) {
     if (busy) {
@@ -339,13 +338,21 @@ var tweetPresenter = function() {
       busy = true;
 
       window.setTimeout(function() {
-        v.tweeties.innerHTML = '';
-        busy = false;
+        v.tweeties.classList.remove('invisible');
 
-        if (queue.length) {
-          module.present(queue.pop());
-        }
-      }, options.delay);
+        window.setTimeout(function() {
+          v.tweeties.classList.add('invisible');
+
+          window.setTimeout(function() {
+            v.tweeties.innerHTML = '';
+            busy = false;
+
+            if (queue.length) {
+              module.present(queue.pop());
+            }
+          }, options.fading);
+        }, options.delay);
+      }, options.fading);
     }
   };
 

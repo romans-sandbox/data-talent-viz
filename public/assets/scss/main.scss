@@ -6,6 +6,8 @@ $t1: #e1e8ed;
 $t2: #292f33;
 $t3: #8899a6;
 
+$fading: 500ms;
+
 body {
   overflow: hidden;
   margin: 0;
@@ -17,9 +19,35 @@ svg.tweet-pack-chart {
 
   circle.item {
     &.leaf {
-      stroke: $gamma;
-      stroke-width: 5px;
+      fill: $gamma;
     }
+  }
+}
+
+div.hashtag-message {
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  font-size: 3em;
+  transform: translateX(-50%);
+
+  span {
+    margin: 0 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+}
+
+div.tweeties {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity $fading;
+  opacity: 1;
+
+  &.invisible {
+    opacity: 0;
   }
 }
 
@@ -27,7 +55,7 @@ div.tweetie {
   border: 1px solid $t1;
   border-radius: 5px;
   padding: 30px 40px;
-  max-width: 500px;
+  width: 500px;
   margin: 0 auto;
 
   div.top {
@@ -68,5 +96,17 @@ div.tweetie {
     font-weight: 300;
     line-height: 32px;
     letter-spacing: 0.01em;
+    word-wrap: break-word;
   }
+}
+
+div.logotype {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 275px;
+  height: 58px;
+  background: url('/assets/img/logo-horizontal@2x.png');
+  background-size: 275px 58px;
 }
