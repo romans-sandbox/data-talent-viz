@@ -281,44 +281,46 @@ var tweetPresenter = function() {
   module.present = function(tweet) {
     var content;
 
-    if (busy) {
-      queue.push(tweet);
-    } else {
-      content = template
-        .replace('%profile-name', tweet.user.name)
-        .replace('%screen-name', tweet.user.screen_name)
-        .replace('%text', tweet.text)
-        .replace('%image', tweet.user.profile_image_url.replace('_normal', '_bigger'));
-
-      if (tweet.entities && tweet.entities.media && tweet.entities.media.length) {
-        content = content.replace(
-          '%embedded-image',
-          '<img src="' + tweet.entities.media[0].media_url_https + '">'
-        );
+    if (!tweet.in_reply_to_status_id && !tweet.retweeted_status) {
+      if (busy) {
+        queue.push(tweet);
       } else {
-        content = content.replace('%embedded-image', '');
-      }
+        content = template
+          .replace('%profile-name', tweet.user.name)
+          .replace('%screen-name', tweet.user.screen_name)
+          .replace('%text', tweet.text)
+          .replace('%image', tweet.user.profile_image_url.replace('_normal', '_bigger'));
 
-      v.tweeties.innerHTML = content;
+        if (tweet.entities && tweet.entities.media && tweet.entities.media.length) {
+          content = content.replace(
+            '%embedded-image',
+            '<img src="' + tweet.entities.media[0].media_url_https + '">'
+          );
+        } else {
+          content = content.replace('%embedded-image', '');
+        }
 
-      busy = true;
+        v.tweeties.innerHTML = content;
 
-      window.setTimeout(function() {
-        v.tweeties.classList.remove('invisible');
+        busy = true;
 
         window.setTimeout(function() {
-          v.tweeties.classList.add('invisible');
+          v.tweeties.classList.remove('invisible');
 
           window.setTimeout(function() {
-            v.tweeties.innerHTML = '';
-            busy = false;
+            v.tweeties.classList.add('invisible');
 
-            if (queue.length) {
-              module.present(queue.pop());
-            }
-          }, options.fading);
-        }, options.delay);
-      }, options.fading);
+            window.setTimeout(function() {
+              v.tweeties.innerHTML = '';
+              busy = false;
+
+              if (queue.length) {
+                module.present(queue.pop());
+              }
+            }, options.fading);
+          }, options.delay);
+        }, options.fading);
+      }
     }
   };
 

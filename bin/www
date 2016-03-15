@@ -136,27 +136,33 @@ function norTweets() {
 function addTweet(socket, tweet, update) {
   var exists = false, existsIndex = null, i;
 
-  for (i = 0; i < allTweets.length; i++) {
-    if (allTweets[i].id_str === tweet.id_str) {
-      exists = true;
-      existsIndex = i;
-      break;
+  if (!tweet.in_reply_to_status_id && !tweet.retweeted_status) {
+    for (i = 0; i < allTweets.length; i++) {
+      if (allTweets[i].id_str === tweet.id_str) {
+        exists = true;
+        existsIndex = i;
+        break;
+      }
+    }
+
+    if (exists && update || !exists) {
+      if (existsIndex !== null) {
+        allTweets[existsIndex] = tweet;
+      } else {
+        allTweets.push(tweet);
+      }
+
+      norTweets();
+
+      if (socket) {
+        emitAllTweets(socket);
+      }
+
+      return true;
     }
   }
 
-  if (exists && update || !exists) {
-    if (existsIndex !== null) {
-      allTweets[existsIndex] = tweet;
-    } else {
-      allTweets.push(tweet);
-    }
-
-    norTweets();
-
-    if (socket) {
-      emitAllTweets(socket);
-    }
-  }
+  return false;
 }
 
 function removeTweet(socket, tweetId) {
@@ -261,12 +267,12 @@ io.sockets.on("connection", function(socket) {
           if (users.length > 0) {
             console.log('New tweet!');
 
-            // this emits the signal to all users but the one that started the stream.
-            socket.broadcast.emit("new tweet", tweet);
-            // this emits the signal to the user that started the stream.
-            socket.emit("new tweet", tweet);
-
-            addTweet(socket, tweet);
+            if (addTweet(socket, tweet)) {
+              // this emits the signal to all users but the one that started the stream.
+              socket.broadcast.emit("new tweet", tweet);
+              // this emits the signal to the user that started the stream.
+              socket.emit("new tweet", tweet);
+            }
           } else {
             disconnect();
           }
@@ -278,7 +284,8 @@ io.sockets.on("connection", function(socket) {
         console.log('Requesting previously posted tweets...');
         twitterClient.get('search/tweets', {
           q: track,
-          result_type: 'recent'
+          result_type: 'recent',
+          include_entities: true
         }, function(error, tweets, response) {
           var i;
 
