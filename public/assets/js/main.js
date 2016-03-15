@@ -1,4 +1,19 @@
-var tweetPackChart = function() {
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function() {
+    this.parentNode.appendChild(this);
+  });
+};
+
+d3.selection.prototype.moveToBack = function() {
+  return this.each(function() {
+    var firstChild = this.parentNode.firstChild;
+    if (firstChild) {
+      this.parentNode.insertBefore(this, firstChild);
+    }
+  });
+};
+
+var tweetPack = function() {
   var module = {};
 
   var diameter = 800;
@@ -18,20 +33,19 @@ var tweetPackChart = function() {
   var availWidth = diameter - margins.left - margins.right;
   var availHeight = diameter - margins.top - margins.bottom;
 
-  var svg, mainGroup, defs;
+  var cont, innerCont;
   var pack, packNodes;
-  var itemsSel, itemContainers;
+  var itemContainersSel, itemContainersEnter, itemContainersExit;
 
   module.run = function() {
-    svg = d3.select('#tweet-pack-chart')
-      .attr('width', diameter)
-      .attr('height', diameter);
+    cont = d3.select('#tweet-pack-cont')
+      .style('width', diameter + 'px')
+      .style('height', diameter + 'px');
 
-    defs = svg.append('defs');
-
-    mainGroup = svg.append('g')
-      .attr('class', 'main-group')
-      .attr('transform', 'translate(' + margins.left + ', ' + margins.top + ')');
+    innerCont = cont.append('div')
+      .attr('class', 'inner')
+      .style('left', margins.left + 'px')
+      .style('top', margins.top + 'px');
 
     pack = d3.layout.pack()
       .size([availWidth, availHeight])
@@ -45,166 +59,108 @@ var tweetPackChart = function() {
   module.update = function(data) {
     packNodes = pack.nodes({children: data});
 
-    itemsSel = mainGroup.selectAll('g.item-container circle.item')
+    itemContainersSel = innerCont.selectAll('div.item-container')
       .data(packNodes);
 
-    itemsSel
-      .transition()
-      .duration(options.durations.itemMorph)
-      .attr('cx', function(d) {
-        return d.x
+    // update
+
+    itemContainersSel
+      .filter(function(d) {
+        return !!d.id;
       })
-      .attr('cy', function(d) {
-        return d.y
-      })
-      .attr('r', function(d) {
-        return d.r
+      .attr('id', function(d) {
+        return d.id;
       });
 
-    itemContainers = itemsSel.enter()
-      .append('g')
+    itemContainersSel
+      .transition()
+      .duration(options.durations.itemMorph)
+      .style('left', function(d) {
+        return d.x - d.r + 'px';
+      })
+      .style('top', function(d) {
+        return d.y - d.r + 'px';
+      });
+
+    itemContainersSel.select('img.item-image')
+      .transition()
+      .duration(options.durations.itemMorph)
+      .attr('width', function(d) {
+        return d.r * 2;
+      })
+      .attr('height', function(d) {
+        return d.r * 2;
+      });
+
+    // enter
+
+    itemContainersEnter = itemContainersSel.enter()
+      .append('div')
       .attr('class', 'item-container')
-      .on('click', function(d) {
-        alert(d.text);
+      .filter(function(d) {
+        return !!d.id;
       });
 
-    itemContainers
-      .append('circle')
-      .attr('class', function(d) {
-        return d.children ? 'item' : 'item leaf';
+    itemContainersEnter
+      .each(function(d) {
+        this.addEventListener('click', function() {
+          alert(d.text);
+        }, false);
+      });
+
+    itemContainersEnter
+      .style('left', function(d) {
+        return d.x + 'px';
       })
-      .attr('cx', function(d) {
-        return d.x
+      .style('top', function(d) {
+        return d.y + 'px';
       })
-      .attr('cy', function(d) {
-        return d.y
-      })
-      .attr('r', '0')
       .transition()
       .duration(options.durations.itemMorph)
-      .attr('r', function(d) {
-        return d.r
-      });
-
-    itemContainers.each(function(d, i) {
-      if (d.id) {
-        // create
-
-        defs
-          .append('clipPath')
-          .attr('id', 'item-clip-' + d.id)
-          .append('circle')
-          .attr('cx', function() {
-            return d.x
-          })
-          .attr('cy', function() {
-            return d.y
-          })
-          .attr('r', '0')
-          .transition()
-          .duration(options.durations.itemMorph)
-          .attr('r', function() {
-            return d.r
-          });
-
-        d3.select(this)
-          .append('image')
-          .attr('xlink:href', d.image)
-          .attr('clip-path', 'url(#item-clip-' + d.id + ')')
-          .attr('x', function() {
-            return d.x;
-          })
-          .attr('y', function() {
-            return d.y;
-          })
-          .attr('width', '0')
-          .attr('height', '0')
-          .transition()
-          .duration(options.durations.itemMorph)
-          .attr('x', function() {
-            return d.x - d.r;
-          })
-          .attr('y', function() {
-            return d.y - d.r;
-          })
-          .attr('width', function() {
-            return d.r * 2;
-          })
-          .attr('height', function() {
-            return d.r * 2;
-          });
-      }
-    });
-
-    mainGroup.selectAll('g.item-container')
-      .data(packNodes)
-      .each(function(d) {
-        // update
-
-        if (d.id) {
-          defs.select('#item-clip-' + d.id)
-            .select('circle')
-            .transition()
-            .duration(options.durations.itemMorph)
-            .attr('cx', function() {
-              return d.x
-            })
-            .attr('cy', function() {
-              return d.y
-            })
-            .attr('r', function() {
-              return d.r
-            });
-
-          d3.select(this)
-            .select('image')
-            .transition()
-            .duration(options.durations.itemMorph)
-            .attr('x', function() {
-              return d.x - d.r;
-            })
-            .attr('y', function() {
-              return d.y - d.r;
-            })
-            .attr('width', function() {
-              return d.r * 2;
-            })
-            .attr('height', function() {
-              return d.r * 2;
-            });
-        }
+      .style('left', function(d) {
+        return d.x - d.r + 'px';
       })
-      .exit()
-      .each(function(d) {
-        // exit
-
-        defs.select('#item-clip-' + d.id)
-          .select('circle')
-          .transition()
-          .duration(options.durations.itemMorph)
-          .attr('r', '0')
-          .each('end', function() {
-            d3.select(this.parentNode).remove();
-          });
-
-        d3.select(this)
-          .select('image')
-          .transition()
-          .duration(options.durations.itemMorph)
-          .attr('x', function() {
-            return d.x;
-          })
-          .attr('y', function() {
-            return d.y;
-          })
-          .attr('width', '0')
-          .attr('height', '0');
+      .style('top', function(d) {
+        return d.y - d.r + 'px';
       });
 
-    itemsSel.exit()
+    itemContainersEnter
+      .append('img')
+      .attr('class', 'item-image')
+      .attr('src', function(d) {
+        return d.image;
+      })
+      .attr('width', '0')
+      .attr('height', '0')
       .transition()
       .duration(options.durations.itemMorph)
-      .attr('r', '0')
+      .attr('width', function(d) {
+        return d.r * 2;
+      })
+      .attr('height', function(d) {
+        return d.r * 2;
+      });
+
+    // exit
+
+    itemContainersExit = itemContainersSel.exit();
+
+    itemContainersExit
+      .transition()
+      .duration(options.durations.itemMorph)
+      .style('left', function(d) {
+        return d.x + 'px';
+      })
+      .style('top', function(d) {
+        return d.y + 'px';
+      });
+
+    itemContainersExit
+      .select('img.item-image')
+      .transition()
+      .duration(options.durations.itemMorph)
+      .attr('width', '0')
+      .attr('height', '0')
       .each('end', function(d) {
         d3.select(this.parentNode).remove();
       });
@@ -219,20 +175,19 @@ var tweetsClient = function() {
   var socket = null;
 
   function parseTweets(tweets) {
-    var data = [], id;
+    var data = [], i;
 
     if (tweets) {
-      for (id in tweets) {
-        if (tweets.hasOwnProperty(id)) {
-          data.push(
-            {
-              id: tweets[id].id_str,
-              value: tweets[id].favorite_count + tweets[id].retweet_count + 1,
-              image: tweets[id].user.profile_image_url_https.replace('_normal', ''), // original size
-              text: tweets[id].text
-            }
-          );
-        }
+      for (i = 0; i < tweets.length; i++) {
+
+        data.push(
+          {
+            id: tweets[i].id_str,
+            value: tweets[i].score,
+            image: tweets[i].user.profile_image_url_https.replace('_normal', ''), // original size
+            text: tweets[i].text
+          }
+        );
       }
     }
 
@@ -254,7 +209,7 @@ var tweetsClient = function() {
         data = parseTweets(tweets);
 
         if (data) {
-          tweetPackChart.update(data);
+          tweetPack.update(data);
         } else {
           console.log('Could not parse all tweets.');
         }
@@ -337,6 +292,60 @@ var tweetPresenter = function() {
         }, options.delay);
       }, options.fading);
     }
+  };
+
+  return module;
+}();
+
+var topTweetsPresenter = function() {
+  var module = {};
+
+  var template = '<div class="tweetie"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div>';
+
+  var options = {
+    delay: 3000,
+    fading: 500
+  };
+
+  var current = 0;
+
+  var v = {};
+
+  v.topTweet = document.querySelector('#top-tweet-container');
+
+  function showNext() {
+    var tweet;
+
+    if (current > 2) {
+      current = 0;
+    }
+
+    tweet = null; ///
+
+    v.topTweet.innerHTML = template
+      .replace('%profile-name', tweet.user.name)
+      .replace('%screen-name', tweet.user.screen_name)
+      .replace('%text', tweet.text)
+      .replace('%image', tweet.user.profile_image_url.replace('_normal', '_bigger'));
+
+    window.setTimeout(function() {
+      v.topTweet.classList.remove('invisible');
+
+      window.setTimeout(function() {
+        v.topTweet.classList.add('invisible');
+
+        window.setTimeout(function() {
+          v.topTweet.innerHTML = '';
+
+          current++;
+          showNext();
+        }, options.fading);
+      }, options.delay);
+    }, options.fading);
+  }
+
+  module.present = function() {
+    showNext();
   };
 
   return module;

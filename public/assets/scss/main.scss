@@ -14,7 +14,7 @@ body {
   font: 16px 'Helvetica Neue', Helvetica, sans-serif;
 }
 
-div.top {
+div.top-tweets {
   position: absolute;
   width: 480px;
   height: 100%;
@@ -23,19 +23,25 @@ div.top {
   top: 0;
 }
 
-div.pack {
+div.pack-outer {
   position: absolute;
   left: 0;
   top: 50%;
   transform: translateY(-50%);
 }
 
-svg.tweet-pack-chart {
-  fill: none;
+div.tweet-pack-cont {
+  position: relative;
 
-  circle.item {
-    &.leaf {
-      fill: $gamma;
+  div.inner {
+    position: relative;
+  }
+
+  div.item-container {
+    position: absolute;
+
+    img {
+      border-radius: 100%;
     }
   }
 }

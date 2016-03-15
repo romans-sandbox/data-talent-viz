@@ -109,21 +109,49 @@ var stream = null;
 var track = "#scot10000";
 var users = [];
 var latestTweets = null;
-var allTweets = {};
+var allTweets = [];
 var updateTweetsInterval;
 
 function emitAllTweets(socket) {
-  socket.broadcast.emit('all tweets', allTweets);
-  socket.emit('all tweets', allTweets);
+  var top50;
+
+  top50 = allTweets.slice(0, 50);
+
+  socket.broadcast.emit('all tweets', top50);
+  socket.emit('all tweets', top50);
+}
+
+function norTweets() {
+  var i;
+
+  for (i = 0; i < allTweets.length; i++) {
+    allTweets[i].score = allTweets[i].favorite_count + allTweets[i].retweet_count + 1;
+  }
+
+  allTweets.sort(function(a, b) {
+    return a.score < b.score ? 1 : -1;
+  });
 }
 
 function addTweet(socket, tweet, update) {
-  var exists;
+  var exists = false, existsIndex = null, i;
 
-  exists = tweet.id_str in allTweets;
+  for (i = 0; i < allTweets.length; i++) {
+    if (allTweets[i].id_str === tweet.id_str) {
+      exists = true;
+      existsIndex = i;
+      break;
+    }
+  }
 
   if (exists && update || !exists) {
-    allTweets[tweet.id_str] = tweet;
+    if (existsIndex !== null) {
+      allTweets[existsIndex] = tweet;
+    } else {
+      allTweets.push(tweet);
+    }
+
+    norTweets();
 
     if (socket) {
       emitAllTweets(socket);
@@ -132,7 +160,15 @@ function addTweet(socket, tweet, update) {
 }
 
 function removeTweet(socket, tweetId) {
-  delete allTweets[tweetId];
+  var i;
+
+  for (i = 0; i < allTweets.length; i++) {
+    if (allTweets[i] === tweetId) {
+      allTweets.splice(i, 1);
+    }
+  }
+
+  norTweets();
 
   if (socket) {
     emitAllTweets(socket);
@@ -142,10 +178,8 @@ function removeTweet(socket, tweetId) {
 function updateTweets(socket) {
   var ids = [], i;
 
-  for (i in allTweets) {
-    if (allTweets.hasOwnProperty(i)) {
-      ids.push(i);
-    }
+  for (i = 0; i < allTweets.length; i++) {
+    ids.push(allTweets[i].id_str);
   }
 
   if (ids.length) {
@@ -193,7 +227,7 @@ function disconnect() {
   stream.destroy();
   stream = null;
   latestTweets = null;
-  allTweets = {};
+  allTweets = [];
   clearInterval(updateTweetsInterval);
 
   console.log(new Array(80).join('-'));

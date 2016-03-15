@@ -1,12 +1,12 @@
 extends layout
 
 block content
-  div.pack
-    svg#tweet-pack-chart.tweet-pack-chart(xmlns="http://www.w3.org/2000/svg")
-  div.top
+  div.pack-outer
+    div#tweet-pack-cont.tweet-pack-cont
+  div.top-tweets
     div placeholder top tweets
 
 block post-js
   script.
-    tweetPackChart.run();
+    tweetPack.run();
     tweetsClient.run();
