@@ -1,0 +1,118 @@
+body {
+  overflow: hidden;
+  margin: 0;
+  font: 16px 'Helvetica Neue', Helvetica, sans-serif; }
+
+div.top-tweets {
+  position: absolute;
+  width: 500px;
+  right: 30px;
+  top: 25%;
+  transform: translateY(-25%);
+  transition: opacity 500ms;
+  opacity: 1; }
+  div.top-tweets.invisible {
+    opacity: 0; }
+
+div.top-tweets-title {
+  text-align: center;
+  font-size: 2.5em;
+  margin-bottom: 40px; }
+  div.top-tweets-title span {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 1.5em; }
+    div.top-tweets-title span sup {
+      font-size: 0.7em; }
+
+div.pack-outer {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%); }
+
+div.tweet-pack-cont {
+  position: relative; }
+  div.tweet-pack-cont div.inner {
+    position: relative; }
+  div.tweet-pack-cont div.item-container {
+    position: absolute; }
+    div.tweet-pack-cont div.item-container img {
+      border-radius: 100%; }
+
+div.hashtag-message {
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  font-size: 3em;
+  transform: translateX(-50%); }
+  div.hashtag-message span {
+    margin: 0 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em; }
+
+div.tweeties {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 500ms;
+  opacity: 1; }
+  div.tweeties.invisible {
+    opacity: 0; }
+
+div.tweetie {
+  border: 1px solid #e1e8ed;
+  border-radius: 5px;
+  width: 500px;
+  margin: 0 auto; }
+  div.tweetie div.inner {
+    padding: 30px 40px; }
+    div.tweetie div.inner div.top {
+      overflow: hidden;
+      margin-bottom: 15px; }
+      div.tweetie div.inner div.top div.image {
+        width: 48px;
+        height: 48px;
+        background: #e1e8ed;
+        margin-right: 10px;
+        float: left; }
+        div.tweetie div.inner div.top div.image img {
+          width: 100%;
+          height: auto; }
+      div.tweetie div.inner div.top div.profile-name {
+        font-weight: 600;
+        font-size: 1.2em;
+        margin-top: 3px;
+        line-height: 1.25;
+        padding-top: 2px;
+        color: #292f33; }
+      div.tweetie div.inner div.top div.screen-name {
+        color: #8899a6;
+        font-size: 0.85em; }
+    div.tweetie div.inner div.text {
+      color: #292f33;
+      font-size: 1.8em;
+      font-weight: 300;
+      line-height: 32px;
+      letter-spacing: 0.01em;
+      word-wrap: break-word;
+      width: 420px; }
+  div.tweetie div.embedded-image {
+    max-height: 300px;
+    overflow: hidden; }
+    div.tweetie div.embedded-image img {
+      width: 100%;
+      height: auto; }
+
+div.logotype {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 275px;
+  height: 58px;
+  background: url("/assets/img/logo-horizontal@2x.png");
+  background-size: 275px 58px; }
+
+/*# sourceMappingURL=main.css.map */
