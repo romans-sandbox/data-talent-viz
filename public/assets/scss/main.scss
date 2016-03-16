@@ -17,19 +17,15 @@ body {
 div.top-tweets {
   position: absolute;
   width: 500px;
-  right: 30px;
-  top: 25%;
-  transform: translateY(-25%);
+  right: 170px;
+  top: 35%;
+  transform: translateY(-35%) scale(1.3);
   transition: opacity $fading;
   opacity: 1;
 
   &.invisible {
     opacity: 0;
   }
-}
-
-div.top-tweet-container {
-
 }
 
 div.top-tweets-title {
@@ -40,11 +36,7 @@ div.top-tweets-title {
   span {
     display: inline-block;
     margin-right: 10px;
-    font-size: 1.5em;
-
-    sup {
-      font-size: 0.7em;
-    }
+    font-weight: 700;
   }
 }
 
@@ -73,13 +65,14 @@ div.tweet-pack-cont {
 
 div.hashtag-message {
   position: absolute;
-  left: 50%;
-  top: 20px;
-  font-size: 3em;
-  transform: translateX(-50%);
+  left: 0;
+  width: 100%;
+  text-align: center;
+  top: 60px;
+  font-size: 6em;
 
   span {
-    margin: 0 10px;
+    margin: 0 30px;
     font-weight: 600;
     letter-spacing: 0.02em;
   }
@@ -89,7 +82,7 @@ div.tweeties {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1.3);
   transition: opacity $fading;
   opacity: 1;
 

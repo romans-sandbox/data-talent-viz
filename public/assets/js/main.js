@@ -16,7 +16,7 @@ d3.selection.prototype.moveToBack = function() {
 var tweetPack = function() {
   var module = {};
 
-  var diameter = 740;
+  var diameter = 1150;
   var margins = {
     top: 20,
     right: 20,
@@ -270,7 +270,7 @@ var tweetPresenter = function() {
   var template = '<div class="tweetie"><div class="inner"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div><div class="embedded-image">%embedded-image</div></div>';
 
   var options = {
-    delay: 200000,
+    delay: 10000,
     fading: 500
   };
 
