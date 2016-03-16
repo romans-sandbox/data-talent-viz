@@ -174,7 +174,7 @@ var tweetsClient = function() {
 
   var socket = null;
 
-  var topThreeTweets = [];
+  var topFiveTweets = [];
   var allTweets;
 
   function parseTweets(tweets) {
@@ -214,7 +214,7 @@ var tweetsClient = function() {
         data = parseTweets(tweets);
 
         if (data) {
-          topThreeTweets = data.slice(0, 3);
+          topFiveTweets = data.slice(0, 5);
           allTweets = data;
           tweetPack.update(data);
         } else {
@@ -251,7 +251,7 @@ var tweetsClient = function() {
   };
 
   module.getTopThreeTweets = function() {
-    return topThreeTweets;
+    return topFiveTweets;
   };
 
   module.getAllTweets = function() {
@@ -356,7 +356,7 @@ var topTweetsPresenter = function() {
   function showNext() {
     var tweet, content;
 
-    if (current > 2) {
+    if (current > 4) {
       current = 0;
     }
 
