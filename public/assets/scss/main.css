@@ -118,4 +118,12 @@ div.logotype {
   background: url("/assets/img/logo-horizontal@2x.png");
   background-size: 275px 58px; }
 
+div.whisky {
+  position: absolute;
+  z-index: 100;
+  bottom: 20px;
+  right: 20px;
+  font-size: 2em;
+  font-weight: 600; }
+
 /*# sourceMappingURL=main.css.map */
