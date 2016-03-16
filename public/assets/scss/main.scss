@@ -65,6 +65,7 @@ div.tweet-pack-cont {
 
 div.hashtag-message {
   position: absolute;
+  z-index: 100;
   left: 0;
   width: 100%;
   text-align: center;
@@ -148,8 +149,8 @@ div.tweetie {
     overflow: hidden;
 
     img {
-      width: 100%;
-      height: auto;
+      width: auto;
+      max-height: 300px;
     }
   }
 }
