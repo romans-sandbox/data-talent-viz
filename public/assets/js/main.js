@@ -266,6 +266,7 @@ var tweetPresenter = function() {
 
   var queue = [];
   var busy = false;
+  var previous = [];
 
   var template = '<div class="tweetie"><div class="inner"><div class="top"><div class="image"><img src="%image"></div><div class="profile-name">%profile-name</div><div class="screen-name">%screen-name</div></div><div class="text">%text</div></div><div class="embedded-image">%embedded-image</div></div>';
 
@@ -284,6 +285,7 @@ var tweetPresenter = function() {
     if (!tweet.in_reply_to_status_id && !tweet.retweeted_status) {
       if (busy) {
         queue.push(tweet);
+        previous.push(tweet);
       } else {
         content = template
           .replace('%profile-name', tweet.user.name)
@@ -316,6 +318,8 @@ var tweetPresenter = function() {
 
               if (queue.length) {
                 module.present(queue.pop());
+              } else {
+                module.present(previous[Math.floor(Math.random() * (previous.length - 1))]);
               }
             }, options.fading);
           }, options.delay);
