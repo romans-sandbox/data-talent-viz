@@ -100,8 +100,10 @@ div.tweetie {
       width: 420px; }
   div.tweetie div.embedded-image {
     max-height: 300px;
-    overflow: hidden; }
+    overflow: hidden;
+    text-align: center; }
     div.tweetie div.embedded-image img {
+      display: inline-block;
       width: auto;
       max-height: 300px; }
 
