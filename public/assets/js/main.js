@@ -345,7 +345,9 @@ var topTweetsPresenter = function() {
   var ordinalInfo = [
     ['1', 'st'],
     ['2', 'nd'],
-    ['3', 'rd']
+    ['3', 'rd'],
+    ['4', 'th'],
+    ['5', 'th']
   ];
 
   var top, current = 0;
