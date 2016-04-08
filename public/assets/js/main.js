@@ -53,14 +53,18 @@ var tweetPack = function() {
         return d.value;
       })
       .padding(10)
-      .sort(null);
+      .sort(function(a, b) {
+        return a.value - b.value;
+      });
   };
 
   module.update = function(data) {
     packNodes = pack.nodes({children: data});
 
     itemContainersSel = innerCont.selectAll('div.item-container')
-      .data(packNodes);
+      .data(packNodes, function(d) {
+        return d.id;
+      });
 
     // update
 

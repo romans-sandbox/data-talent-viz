@@ -111,6 +111,7 @@ var users = [];
 var latestTweets = null;
 var allTweets = [];
 var updateTweetsInterval;
+var requestLatestTweets = false;
 
 function emitAllTweets(socket) {
   var top50;
@@ -129,7 +130,11 @@ function norTweets() {
   }
 
   allTweets.sort(function(a, b) {
-    return a.score < b.score ? 1 : -1;
+    if (a.score == b.score) {
+      return a.id_str > b.id_str ? 1 : -1;
+    }
+
+    return a.score > b.score ? 1 : -1;
   });
 }
 
@@ -228,14 +233,9 @@ function logConnectedUsers() {
 }
 
 function disconnect() {
-  console.log('! No users connected. Streaming destroyed. Application state reset.');
+  console.log('! No users connected.');
 
-  // if there are no users connected we destroy the stream.
-  stream.destroy();
-  stream = null;
   latestTweets = null;
-  allTweets = [];
-  clearInterval(updateTweetsInterval);
 
   console.log(new Array(80).join('-'));
 }
@@ -281,33 +281,35 @@ io.sockets.on("connection", function(socket) {
           console.log('! Streaming error.', error);
         });
 
-        console.log('Requesting previously posted tweets...');
-        twitterClient.get('search/tweets', {
-          q: track,
-          result_type: 'recent',
-          include_entities: true
-        }, function(error, tweets, response) {
-          var i;
+        if (requestLatestTweets) {
+          console.log('Requesting previously posted tweets...');
+          twitterClient.get('search/tweets', {
+            q: track,
+            result_type: 'recent',
+            include_entities: true
+          }, function(error, tweets, response) {
+            var i;
 
-          if (tweets && !error) {
-            console.log('Previously posted tweets received.');
+            if (tweets && !error) {
+              console.log('Previously posted tweets received.');
 
-            latestTweets = tweets;
+              latestTweets = tweets;
 
-            for (i = 0; i < tweets.statuses.length; i++) {
-              addTweet(socket, tweets.statuses[i]);
+              for (i = 0; i < tweets.statuses.length; i++) {
+                addTweet(socket, tweets.statuses[i]);
+              }
+
+              console.log('Previously posted tweets emitted.');
+
+              socket.broadcast.emit('latest tweets', tweets);
+              socket.emit('latest tweets', tweets);
+            } else if (!tweets) {
+              console.log('! No previously posted tweets found.');
+            } else {
+              console.log('! Could not retrieve previously posted tweets.');
             }
-
-            console.log('Previously posted tweets emitted.');
-
-            socket.broadcast.emit('latest tweets', tweets);
-            socket.emit('latest tweets', tweets);
-          } else if (!tweets) {
-            console.log('! No previously posted tweets found.');
-          } else {
-            console.log('! Could not retrieve previously posted tweets.');
-          }
-        });
+          });
+        }
 
         updateTweetsInterval = setInterval(function() {
           updateTweets(socket);
