@@ -106,7 +106,7 @@ var twitterClient = new Twitter({
 });
 
 var stream = null;
-var track = "#DTS16";
+var track = "#ScotSecure16";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
