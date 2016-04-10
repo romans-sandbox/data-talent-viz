@@ -106,7 +106,7 @@ var twitterClient = new Twitter({
 });
 
 var stream = null;
-var track = "#ScotSecure16";
+var track = "friday";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
@@ -116,7 +116,7 @@ var requestLatestTweets = false;
 function emitAllTweets(socket) {
   var top50;
 
-  top50 = allTweets.slice(0, 50);
+  top50 = allTweets.slice(0, 100);
 
   socket.broadcast.emit('all tweets', top50);
   socket.emit('all tweets', top50);
@@ -134,7 +134,7 @@ function norTweets() {
       return a.id_str > b.id_str ? 1 : -1;
     }
 
-    return a.score > b.score ? 1 : -1;
+    return a.score < b.score ? 1 : -1;
   });
 }
 
@@ -221,6 +221,7 @@ function updateTweets(socket) {
             }
           }
         } else {
+          console.log(error);
           console.log('! Empty response when requesting tweet updates.');
         }
       }
@@ -314,6 +315,8 @@ io.sockets.on("connection", function(socket) {
         updateTweetsInterval = setInterval(function() {
           updateTweets(socket);
         }, 20 * 1000);
+
+        console.log('Update tweets timer registered.');
       });
     }
   });

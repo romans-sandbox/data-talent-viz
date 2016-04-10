@@ -54,7 +54,7 @@ var tweetPack = function() {
       })
       .padding(10)
       .sort(function(a, b) {
-        return a.value - b.value;
+        return b.value - a.value;
       });
   };
 
