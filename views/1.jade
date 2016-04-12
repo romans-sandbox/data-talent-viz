@@ -1,14 +1,14 @@
 extends layout
 
 block content
+  div.global-title
+    | most&nbsp;
+    strong popular tweets
+    | &nbsp;in real-time
   div.pack-outer
     div#tweet-pack-cont.tweet-pack-cont
   div#top-tweets-outer.top-tweets.invisible
-    div.top-tweets-title
-      span
-        span#top-tweet-ordinal-number 1
-        sup#top-tweet-ordinal-indicator st
-      | most popular tweet
+    div#top-tweet-ordinal-number.top-tweet-ordinal-number
     div#top-tweet-container.top-tweet-container
   div.logotype
 

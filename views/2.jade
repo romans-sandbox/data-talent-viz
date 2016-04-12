@@ -1,13 +1,18 @@
 extends layout
 
 block content
-  div.hashtag-message
+  div#hashtag-message.hashtag-message.visible
     | use
-    span #ScotSecure16
+    span #Casaleggio
     | when tweeting
+  div#question-message.hashtag-message
+    | how do you keep up with security threats?
+  div#tweeties-prize.tweeties-prize.visible
+    | win an&nbsp;
+    strong iPad
+    | !
   div#tweeties.tweeties.invisible
   div.logotype
-  div.whisky Win a Bottle of Whisky!
 
 block post-js
   script.

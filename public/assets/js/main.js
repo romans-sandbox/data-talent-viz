@@ -16,7 +16,7 @@ d3.selection.prototype.moveToBack = function() {
 var tweetPack = function() {
   var module = {};
 
-  var diameter = 1150;
+  var diameter = 1050;
   var margins = {
     top: 20,
     right: 20,
@@ -180,6 +180,12 @@ var tweetsClient = function() {
 
   var topFiveTweets = [];
   var allTweets;
+  var yinYang = false;
+
+  var v = {};
+
+  v.hashtagMessage = document.querySelector('#hashtag-message');
+  v.questionMessage = document.querySelector('#question-message');
 
   function parseTweets(tweets) {
     var data = [], i;
@@ -252,9 +258,21 @@ var tweetsClient = function() {
         socket.emit('start stream');
       });
     }
+
+    window.setInterval(function() {
+      if (yinYang) {
+        v.hashtagMessage.classList.add('visible');
+        v.questionMessage.classList.remove('visible');
+      } else {
+        v.hashtagMessage.classList.remove('visible');
+        v.questionMessage.classList.add('visible');
+      }
+
+      yinYang = !yinYang;
+    }, 5000);
   };
 
-  module.getTopThreeTweets = function() {
+  module.getTopFiveTweets = function() {
     return topFiveTweets;
   };
 
@@ -282,6 +300,7 @@ var tweetPresenter = function() {
   var v = {};
 
   v.tweeties = document.querySelector('#tweeties');
+  v.tweetiesPrize = document.querySelector('#tweeties-prize');
 
   module.present = function(tweet) {
     var content;
@@ -310,6 +329,8 @@ var tweetPresenter = function() {
 
         busy = true;
 
+        v.tweetiesPrize.classList.remove('visible');
+
         window.setTimeout(function() {
           v.tweeties.classList.remove('invisible');
 
@@ -323,7 +344,8 @@ var tweetPresenter = function() {
               if (queue.length) {
                 module.present(queue.pop());
               } else {
-                module.present(previous[Math.floor(Math.random() * (previous.length - 1))]);
+                v.tweetiesPrize.classList.add('visible');
+                // module.present(previous[Math.floor(Math.random() * (previous.length - 1))]);
               }
             }, options.fading);
           }, options.delay);
@@ -361,7 +383,6 @@ var topTweetsPresenter = function() {
   v.topTweet = document.querySelector('#top-tweet-container');
   v.topTweetOuter = document.querySelector('#top-tweets-outer');
   v.topTweetOrdinalNumber = document.querySelector('#top-tweet-ordinal-number');
-  v.topTweetOrdinalIndicator = document.querySelector('#top-tweet-ordinal-indicator');
 
   function showNext() {
     var tweet, content;
@@ -370,7 +391,7 @@ var topTweetsPresenter = function() {
       current = 0;
     }
 
-    top = tweetsClient.getTopThreeTweets();
+    top = tweetsClient.getTopFiveTweets();
 
     if (current in top) {
       tweet = top[current];
@@ -406,7 +427,6 @@ var topTweetsPresenter = function() {
     v.topTweet.innerHTML = content;
 
     v.topTweetOrdinalNumber.innerHTML = ordinalInfo[current][0];
-    v.topTweetOrdinalIndicator.innerHTML = ordinalInfo[current][1];
 
     window.setTimeout(function() {
       v.topTweetOuter.classList.remove('invisible');
