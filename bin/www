@@ -110,7 +110,6 @@ var track = "United";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
-var updateTweetsInterval;
 var requestLatestTweets = false;
 
 function emitAllTweets(socket) {
