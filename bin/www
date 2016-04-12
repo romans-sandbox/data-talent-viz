@@ -106,7 +106,7 @@ var twitterClient = new Twitter({
 });
 
 var stream = null;
-var track = "friday";
+var track = "United";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
@@ -186,46 +186,70 @@ function removeTweet(socket, tweetId) {
   }
 }
 
-function updateTweets(socket) {
-  var ids = [], i;
+function chunk(arr, len) {
+  var chunks = [],
+    i = 0,
+    n = arr.length;
 
-  for (i = 0; i < allTweets.length; i++) {
-    ids.push(allTweets[i].id_str);
+  while (i < n) {
+    chunks.push(arr.slice(i, i += len));
   }
 
-  if (ids.length) {
-    console.log('Requesting tweet updates...');
+  return chunks;
+}
 
-    twitterClient.post(
-      'statuses/lookup',
-      {
-        id: ids.join(','),
-        map: true,
-        include_entities: true
-      },
-      function(error, data, response) {
-        var i;
+function updateTweets(socket) {
+  var allIds = [], idChunks, i;
 
-        if (data && 'id' in data) {
-          console.log('Tweet updates received.');
+  for (i = 0; i < allTweets.length; i++) {
+    allIds.push(allTweets[i].id_str);
+  }
 
-          for (i in data.id) {
-            if (data.id.hasOwnProperty(i)) {
-              if (data.id[i] !== null) {
-                // probably updated
-                addTweet(socket, data.id[i], true);
+  idChunks = chunk(allIds, 100);
+
+  if (idChunks.length) {
+    for (i = 0; i < idChunks.length; i++) {
+      (function(ids, i) {
+        setTimeout(function() {
+          console.log('Requesting tweet updates (' + (i * 100 + 1) + ' to ' + Math.min(allIds.length, i * 100 + 100) + ' of ' + allIds.length + ')...');
+
+          twitterClient.post(
+            'statuses/lookup',
+            {
+              id: ids.join(','),
+              map: true,
+              include_entities: true
+            },
+            function(error, data, response) {
+              var k;
+
+              if (data && 'id' in data) {
+                console.log('Tweet updates received.');
+
+                for (k in data.id) {
+                  if (data.id.hasOwnProperty(k)) {
+                    if (data.id[k] !== null) {
+                      // probably updated
+                      addTweet(socket, data.id[k], true);
+                    } else {
+                      // deleted or unavailable
+                      removeTweet(socket, k);
+                    }
+                  }
+                }
               } else {
-                // deleted or unavailable
-                removeTweet(socket, i);
+                console.log(error);
+                console.log('! Empty response when requesting tweet updates.');
               }
             }
-          }
-        } else {
-          console.log(error);
-          console.log('! Empty response when requesting tweet updates.');
-        }
-      }
-    );
+          );
+        }, i * 20 * 1000);
+      })(idChunks[i], i);
+    }
+
+    setTimeout(function() {
+      updateTweets(socket);
+    }, idChunks.length * 20 * 1000);
   }
 }
 
@@ -312,7 +336,7 @@ io.sockets.on("connection", function(socket) {
           });
         }
 
-        updateTweetsInterval = setInterval(function() {
+        setTimeout(function() {
           updateTweets(socket);
         }, 20 * 1000);
 

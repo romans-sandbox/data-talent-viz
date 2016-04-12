@@ -108,7 +108,7 @@ var tweetPack = function() {
     itemContainersEnter
       .each(function(d) {
         this.addEventListener('click', function() {
-          alert(d.text);
+          alert(d.user_name + ': ' + d.text + '; https://twitter.com/' + d.screen_name + '/status/' + d.id);
         }, false);
       });
 
