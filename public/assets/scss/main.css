@@ -26,33 +26,62 @@ div.top-tweets-title {
 div.pack-outer {
   position: absolute;
   left: 0;
-  top: 150px; }
+  top: 50px; }
 
 div.tweet-pack-cont {
   position: relative; }
   div.tweet-pack-cont div.inner {
     position: relative; }
   div.tweet-pack-cont div.item-container {
-    position: absolute; }
+    position: absolute;
+    box-shadow: 0 0 10px 10px transparent;
+    border-radius: 100%;
+    transition: box-shadow 500ms; }
     div.tweet-pack-cont div.item-container img {
+      display: block;
       border-radius: 100%; }
+    div.tweet-pack-cont div.item-container div.number {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 5em;
+      color: #fe2;
+      opacity: 0;
+      transition: opacity 500ms;
+      -webkit-text-stroke: 1px #000; }
+    div.tweet-pack-cont div.item-container.active {
+      box-shadow: 0 0 10px 10px #fe2; }
+      div.tweet-pack-cont div.item-container.active img {
+        -webkit-filter: grayscale(100%); }
+      div.tweet-pack-cont div.item-container.active div.number {
+        opacity: 1; }
 
-div.hashtag-message {
+div.hashtag-message,
+div.question-message {
   position: absolute;
   z-index: 100;
   left: 0;
   width: 100%;
   text-align: center;
   top: 40px;
-  font-size: 6em;
+  font-size: 4em;
   opacity: 0;
   transition: opacity 500ms; }
-  div.hashtag-message.visible {
+  div.hashtag-message.visible,
+  div.question-message.visible {
     opacity: 1; }
-  div.hashtag-message span {
+  div.hashtag-message span,
+  div.question-message span {
     margin: 0 30px;
     font-weight: 600;
     letter-spacing: 0.02em; }
+
+div.question-message {
+  font-weight: 600;
+  background: #fe2; }
 
 div.tweeties {
   position: absolute;
@@ -65,7 +94,7 @@ div.tweeties {
     opacity: 0; }
 
 div.tweetie {
-  border: 1px solid #e1e8ed;
+  border: 3px solid #fe2;
   border-radius: 5px;
   width: 500px;
   margin: 0 auto; }
@@ -128,17 +157,17 @@ div.top-tweet-ordinal-number {
   font-size: 30em;
   transform: translate(-50%, -50%);
   color: #ddd;
-  opacity: 0.5; }
+  opacity: 0.5;
+  display: none; }
 
 div.global-title {
   position: absolute;
   pointer-events: none;
   text-align: center;
   width: 100%;
-  top: 0;
+  top: 40px;
   left: 0;
-  font-size: 6em;
-  line-height: 200px; }
+  font-size: 4em; }
 
 div.tweeties-prize {
   position: absolute;
@@ -148,7 +177,7 @@ div.tweeties-prize {
   top: 50%;
   transform: translateY(-50%);
   left: 0;
-  font-size: 19em;
+  font-size: 12em;
   text-align: center;
   opacity: 0;
   transition: opacity 500ms; }

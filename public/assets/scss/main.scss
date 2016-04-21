@@ -2,6 +2,7 @@ $alpha: #fff;
 $beta: #000;
 $gamma: #ccc;
 $delta: #ddd;
+$epsilon: #fe2;
 
 $t1: #e1e8ed;
 $t2: #292f33;
@@ -44,7 +45,7 @@ div.top-tweets-title {
 div.pack-outer {
   position: absolute;
   left: 0;
-  top: 150px;
+  top: 50px;
 }
 
 div.tweet-pack-cont {
@@ -56,21 +57,52 @@ div.tweet-pack-cont {
 
   div.item-container {
     position: absolute;
+    box-shadow: 0 0 10px 10px transparent;
+    border-radius: 100%;
+    transition: box-shadow $fading;
 
     img {
+      display: block;
       border-radius: 100%;
+    }
+
+    div.number {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 5em;
+      color: $epsilon;
+      opacity: 0;
+      transition: opacity $fading;
+      -webkit-text-stroke: 1px $beta;
+    }
+
+    &.active {
+      box-shadow: 0 0 10px 10px $epsilon;
+
+      img {
+        -webkit-filter: grayscale(100%);
+      }
+
+      div.number {
+        opacity: 1;
+      }
     }
   }
 }
 
-div.hashtag-message {
+div.hashtag-message,
+div.question-message {
   position: absolute;
   z-index: 100;
   left: 0;
   width: 100%;
   text-align: center;
   top: 40px;
-  font-size: 6em;
+  font-size: 4em;
   opacity: 0;
   transition: opacity $fading;
 
@@ -83,6 +115,11 @@ div.hashtag-message {
     font-weight: 600;
     letter-spacing: 0.02em;
   }
+}
+
+div.question-message {
+  font-weight: 600;
+  background: $epsilon;
 }
 
 div.tweeties {
@@ -99,7 +136,7 @@ div.tweeties {
 }
 
 div.tweetie {
-  border: 1px solid $t1;
+  border: 3px solid $epsilon;
   border-radius: 5px;
   width: 500px;
   margin: 0 auto;
@@ -183,6 +220,7 @@ div.top-tweet-ordinal-number {
   transform: translate(-50%, -50%);
   color: $delta;
   opacity: 0.5;
+  display: none;
 }
 
 div.global-title {
@@ -190,10 +228,9 @@ div.global-title {
   pointer-events: none;
   text-align: center;
   width: 100%;
-  top: 0;
+  top: 40px;
   left: 0;
-  font-size: 6em;
-  line-height: 200px;
+  font-size: 4em;
 }
 
 div.tweeties-prize {
@@ -204,7 +241,7 @@ div.tweeties-prize {
   top: 50%;
   transform: translateY(-50%);
   left: 0;
-  font-size: 19em;
+  font-size: 12em;
   text-align: center;
   opacity: 0;
   transition: opacity $fading;

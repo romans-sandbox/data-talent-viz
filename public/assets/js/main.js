@@ -16,7 +16,7 @@ d3.selection.prototype.moveToBack = function() {
 var tweetPack = function() {
   var module = {};
 
-  var diameter = 1050;
+  var diameter = 1150;
   var margins = {
     top: 20,
     right: 20,
@@ -73,7 +73,7 @@ var tweetPack = function() {
         return !!d.id;
       })
       .attr('id', function(d) {
-        return d.id;
+        return 'item' + d.id;
       });
 
     itemContainersSel
@@ -96,13 +96,21 @@ var tweetPack = function() {
         return d.r * 2;
       });
 
+    itemContainersSel.select('div.number')
+      .text(function(d, i) {
+        return i + 1;
+      });
+
     // enter
 
     itemContainersEnter = itemContainersSel.enter()
       .append('div')
-      .attr('class', 'item-container')
       .filter(function(d) {
         return !!d.id;
+      })
+      .attr('class', 'item-container')
+      .attr('id', function(d) {
+        return 'item' + d.id;
       });
 
     itemContainersEnter
@@ -145,6 +153,13 @@ var tweetPack = function() {
         return d.r * 2;
       });
 
+    itemContainersEnter
+      .append('div')
+      .attr('class', 'number')
+      .text(function(d, i) {
+        return i + 1;
+      });
+
     // exit
 
     itemContainersExit = itemContainersSel.exit();
@@ -178,7 +193,7 @@ var tweetsClient = function() {
 
   var socket = null;
 
-  var topFiveTweets = [];
+  var topTenTweets = [];
   var allTweets;
   var yinYang = false;
 
@@ -224,7 +239,7 @@ var tweetsClient = function() {
         data = parseTweets(tweets);
 
         if (data) {
-          topFiveTweets = data.slice(0, 5);
+          topTenTweets = data.slice(0, 10);
           allTweets = data;
           tweetPack.update(data);
         } else {
@@ -272,8 +287,8 @@ var tweetsClient = function() {
     }, 5000);
   };
 
-  module.getTopFiveTweets = function() {
-    return topFiveTweets;
+  module.getTopTenTweets = function() {
+    return topTenTweets;
   };
 
   module.getAllTweets = function() {
@@ -373,7 +388,12 @@ var topTweetsPresenter = function() {
     ['2', 'nd'],
     ['3', 'rd'],
     ['4', 'th'],
-    ['5', 'th']
+    ['5', 'th'],
+    ['6', 'th'],
+    ['7', 'th'],
+    ['8', 'th'],
+    ['9', 'th'],
+    ['10', 'th']
   ];
 
   var top, current = 0;
@@ -385,13 +405,13 @@ var topTweetsPresenter = function() {
   v.topTweetOrdinalNumber = document.querySelector('#top-tweet-ordinal-number');
 
   function showNext() {
-    var tweet, content;
+    var tweet, content, allTweetCircles, tweetCircle, i;
 
-    if (current > 4) {
+    if (current > 9) {
       current = 0;
     }
 
-    top = tweetsClient.getTopFiveTweets();
+    top = tweetsClient.getTopTenTweets();
 
     if (current in top) {
       tweet = top[current];
@@ -427,6 +447,20 @@ var topTweetsPresenter = function() {
     v.topTweet.innerHTML = content;
 
     v.topTweetOrdinalNumber.innerHTML = ordinalInfo[current][0];
+
+    allTweetCircles = document.querySelectorAll('div.item-container');
+
+    if (allTweetCircles) {
+      for (i = 0; i < allTweetCircles.length; i++) {
+        allTweetCircles[i].classList.remove('active');
+      }
+    }
+
+    tweetCircle = document.querySelector('#item' + tweet.id);
+
+    if (tweetCircle) {
+      tweetCircle.classList.add('active');
+    }
 
     window.setTimeout(function() {
       v.topTweetOuter.classList.remove('invisible');
