@@ -484,3 +484,34 @@ var topTweetsPresenter = function() {
 
   return module;
 }();
+
+(function() {
+  var bank = [
+    'How do you keep up with security threats?',
+    'What cyber threat concerns you the most?',
+    'How can we build a safer cyber world?',
+    'Can you truly be anonymous online? Should you?',
+    'What is your response plan in the event of a data breach?',
+    'Do you regularly audit your user-access privileges?',
+    'Do you update your software often? Why is it important?',
+    'How do you train your staff to protect against threats?',
+    'What monitoring strategies you use to identify unusual activity?',
+    'Do cyber risks matter to your company?',
+    'Is your business prepared for a major breach?',
+    'Are you managing your supply chain risk?'
+  ], current = 0, cont;
+
+  cont = document.querySelector('#question-message');
+
+  function change() {
+    cont.innerHTML = bank[current];
+
+    current++;
+    if (current > bank.length - 1) {
+      current = 0;
+    }
+  }
+
+  change();
+  window.setInterval(change, 5 * 60 * 1000); // every 5 minutes
+})();
