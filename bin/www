@@ -106,7 +106,7 @@ var twitterClient = new Twitter({
 });
 
 var stream = null;
-var track = "#HappyBirthdayYourMajesty";
+var track = "#scotsecure";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
