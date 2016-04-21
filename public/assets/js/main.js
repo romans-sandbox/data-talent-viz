@@ -97,8 +97,8 @@ var tweetPack = function() {
       });
 
     itemContainersSel.select('div.number')
-      .text(function(d, i) {
-        return i + 1;
+      .text(function(d) {
+        return d.number;
       });
 
     // enter
@@ -156,8 +156,8 @@ var tweetPack = function() {
     itemContainersEnter
       .append('div')
       .attr('class', 'number')
-      .text(function(d, i) {
-        return i + 1;
+      .text(function(d) {
+        return d.number;
       });
 
     // exit
@@ -215,7 +215,8 @@ var tweetsClient = function() {
             text: tweets[i].text,
             user_name: tweets[i].user.name,
             screen_name: tweets[i].user.screen_name,
-            media_url: tweets[i].entities && tweets[i].entities.media && tweets[i].entities.media.length ? tweets[i].entities.media[0].media_url_https : null
+            media_url: tweets[i].entities && tweets[i].entities.media && tweets[i].entities.media.length ? tweets[i].entities.media[0].media_url_https : null,
+            number: tweets[i].number
           }
         );
       }
@@ -504,6 +505,10 @@ var topTweetsPresenter = function() {
   cont = document.querySelector('#question-message');
 
   function change() {
+    if (!cont) {
+      return;
+    }
+
     cont.innerHTML = bank[current];
 
     current++;
