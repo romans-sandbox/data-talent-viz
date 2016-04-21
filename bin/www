@@ -99,10 +99,10 @@ function onListening() {
 var tweets = {};
 
 var twitterClient = new Twitter({
-  consumer_key: "YWypvQAD1s9qPkUvZCpCMZDFj",
-  consumer_secret: "DZqqE3ijVmf8rEWqfptu9j5M6YmbCYt3hVWre50aS8zxtGGFxi",
-  access_token_key: "707901665668689920-2MWWWgQZmhF18Rteo61aCM3Qjiccf9O",
-  access_token_secret: "ws3ZcRkAToLPbekAXuxt6sqNYICvGO111T6cQYm67KyrQ"
+  consumer_key: "EnvraFkTwKtXKs5F64fj6KqoG",
+  consumer_secret: "gxWoM9qKR3ZRHZGxac18I5JJAglhwZe1kVwgYeSrKvLEoH4aW5",
+  access_token_key: "709412533468327936-oOkRjmfIWAEJVeGI7NypXsjpw2Xz8u6",
+  access_token_secret: "SGY7Prz1b5ONhXvlVwHFfyw33e9AfvLLRDRmFemaMk1kn"
 });
 
 var stream = null;
