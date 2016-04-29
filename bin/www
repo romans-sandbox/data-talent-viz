@@ -106,7 +106,7 @@ var twitterClient = new Twitter({
 });
 
 var stream = null;
-var track = "#scotsecure";
+var track = "#VIEWS";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
