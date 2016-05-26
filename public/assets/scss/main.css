@@ -195,7 +195,9 @@ div.plane {
   transform: translateY(-50%);
   left: 100%;
   background: #fe2;
-  letter-spacing: 0.1em; }
+  letter-spacing: 0.1em;
+  width: 100%;
+  text-align: center; }
   div.plane.flying {
     left: 0;
     transition: 2s left; }
