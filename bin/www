@@ -106,7 +106,7 @@ var twitterClient = new Twitter({
 });
 
 var stream = null;
-var track = "#ScotMob";
+var track = "#MobScot";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
@@ -205,6 +205,8 @@ function updateTweets(socket) {
   var allIds = [
     '735721355593678849',
     '735733400888188930',
+    '735740091398643712',
+    '735744933110288385',
     /*'723067773862158336',
     '723067726927921153',
     '723067703385313280',
