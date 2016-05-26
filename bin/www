@@ -106,7 +106,7 @@ var twitterClient = new Twitter({
 });
 
 var stream = null;
-var track = "#ComicBookTVShows";
+var track = "#ScotMob";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
@@ -203,6 +203,8 @@ function chunk(arr, len) {
 
 function updateTweets(socket) {
   var allIds = [
+    '735721355593678849',
+    '735733400888188930',
     /*'723067773862158336',
     '723067726927921153',
     '723067703385313280',
