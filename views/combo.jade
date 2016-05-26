@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  div.global-title
+    | Most&nbsp;
+    strong Popular Tweets
+    | &nbsp;in Real-time &mdash; Use&nbsp;
+    strong #ScotMob
+  div.pack-outer
+    div#tweet-pack-cont.tweet-pack-cont
+  div#top-tweets-outer.top-tweets.invisible
+    div#top-tweet-ordinal-number.top-tweet-ordinal-number
+    div#top-tweet-container.top-tweet-container
+  div.logotype
+  div.plane#plane TWEET&nbsp;TO&nbsp;WIN&nbsp;A&nbsp;BOTTLE&nbsp;OF&nbsp;CHAMPAGNE!
+
+block post-js
+  script.
+    tweetPack.run();
+    tweetsClient.run();
+    topTweetsPresenter.present();
+    tweetsClient.run2(true);

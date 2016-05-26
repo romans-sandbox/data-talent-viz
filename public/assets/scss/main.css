@@ -93,6 +93,9 @@ div.tweeties {
   div.tweeties.invisible {
     opacity: 0; }
 
+div.top-tweet-container.new div.tweetie {
+  border-color: #ccc !important; }
+
 div.tweetie {
   border: 3px solid #fe2;
   border-radius: 5px;
@@ -165,9 +168,10 @@ div.global-title {
   pointer-events: none;
   text-align: center;
   width: 100%;
-  top: 40px;
+  top: 20px;
   left: 0;
-  font-size: 4em; }
+  font-size: 4em;
+  text-transform: uppercase; }
 
 div.tweeties-prize {
   position: absolute;
@@ -183,5 +187,20 @@ div.tweeties-prize {
   transition: opacity 500ms; }
   div.tweeties-prize.visible {
     opacity: 1; }
+
+div.plane {
+  position: absolute;
+  font-size: 5em;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 100%;
+  background: #fe2;
+  letter-spacing: 0.1em; }
+  div.plane.flying {
+    left: 0;
+    transition: 2s left; }
+  div.plane.flying-2 {
+    left: -100%;
+    transition: 2s left; }
 
 /*# sourceMappingURL=main.css.map */

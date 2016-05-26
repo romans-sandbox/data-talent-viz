@@ -257,7 +257,7 @@ var tweetsClient = function() {
     }
   };
 
-  module.run2 = function() {
+  module.run2 = function(silent) {
     if ('io' in window) {
       // connect to the server
       socket = io.connect('/');
@@ -275,17 +275,19 @@ var tweetsClient = function() {
       });
     }
 
-    window.setInterval(function() {
-      if (yinYang) {
-        v.hashtagMessage.classList.add('visible');
-        v.questionMessage.classList.remove('visible');
-      } else {
-        v.hashtagMessage.classList.remove('visible');
-        v.questionMessage.classList.add('visible');
-      }
+    if (!silent) {
+      window.setInterval(function() {
+        if (yinYang) {
+          v.hashtagMessage.classList.add('visible');
+          v.questionMessage.classList.remove('visible');
+        } else {
+          v.hashtagMessage.classList.remove('visible');
+          v.questionMessage.classList.add('visible');
+        }
 
-      yinYang = !yinYang;
-    }, 5000);
+        yinYang = !yinYang;
+      }, 5000);
+    }
   };
 
   module.getTopTenTweets = function() {
@@ -319,55 +321,15 @@ var tweetPresenter = function() {
   v.tweetiesPrize = document.querySelector('#tweeties-prize');
 
   module.present = function(tweet) {
-    var content;
+    queue.push(tweet);
+  };
 
-    if (!tweet.in_reply_to_status_id && !tweet.retweeted_status) {
-      if (busy) {
-        queue.push(tweet);
-        previous.push(tweet);
-      } else {
-        content = template
-          .replace('%profile-name', tweet.user.name)
-          .replace('%screen-name', tweet.user.screen_name)
-          .replace('%text', tweet.text)
-          .replace('%image', tweet.user.profile_image_url.replace('_normal', '_bigger'));
+  module.getQueue = function() {
+    return queue;
+  };
 
-        if (tweet.entities && tweet.entities.media && tweet.entities.media.length) {
-          content = content.replace(
-            '%embedded-image',
-            '<img src="' + tweet.entities.media[0].media_url_https + '">'
-          );
-        } else {
-          content = content.replace('%embedded-image', '');
-        }
-
-        v.tweeties.innerHTML = content;
-
-        busy = true;
-
-        v.tweetiesPrize.classList.remove('visible');
-
-        window.setTimeout(function() {
-          v.tweeties.classList.remove('invisible');
-
-          window.setTimeout(function() {
-            v.tweeties.classList.add('invisible');
-
-            window.setTimeout(function() {
-              v.tweeties.innerHTML = '';
-              busy = false;
-
-              if (queue.length) {
-                module.present(queue.pop());
-              } else {
-                v.tweetiesPrize.classList.add('visible');
-                // module.present(previous[Math.floor(Math.random() * (previous.length - 1))]);
-              }
-            }, options.fading);
-          }, options.delay);
-        }, options.fading);
-      }
-    }
+  module.popQueue = function() {
+    return queue.pop();
   };
 
   return module;
@@ -406,27 +368,48 @@ var topTweetsPresenter = function() {
   v.topTweetOrdinalNumber = document.querySelector('#top-tweet-ordinal-number');
 
   function showNext() {
-    var tweet, content, allTweetCircles, tweetCircle, i;
+    var tweet, content, allTweetCircles, tweetCircle, i, isNewTweet = false, newTweet;
 
-    if (current > 9) {
-      current = 0;
-    }
+    newTweet = tweetPresenter.popQueue();
 
-    top = tweetsClient.getTopTenTweets();
+    if (newTweet) {
+      isNewTweet = true;
 
-    if (current in top) {
-      tweet = top[current];
+      newTweet.image = newTweet.user.profile_image_url.replace('_normal', '_bigger');
+
+      if (newTweet.entities && newTweet.entities.media && newTweet.entities.media.length) {
+        newTweet.media_url = newTweet.entities.media[0].media_url_https;
+      }
+
+      newTweet.user_name = newTweet.user.name;
+      newTweet.screen_name = newTweet.user.screen_name;
+
+      tweet = newTweet;
+
+      v.topTweet.classList.add('new');
     } else {
-      current = 0;
+      v.topTweet.classList.remove('new');
+
+      if (current > 9) {
+        current = 0;
+      }
+
+      top = tweetsClient.getTopTenTweets();
 
       if (current in top) {
         tweet = top[current];
       } else {
-        window.setTimeout(function() {
-          showNext();
-        }, options.retryAfter);
+        current = 0;
 
-        return;
+        if (current in top) {
+          tweet = top[current];
+        } else {
+          window.setTimeout(function() {
+            showNext();
+          }, options.retryAfter);
+
+          return;
+        }
       }
     }
 
@@ -447,7 +430,7 @@ var topTweetsPresenter = function() {
 
     v.topTweet.innerHTML = content;
 
-    v.topTweetOrdinalNumber.innerHTML = ordinalInfo[current][0];
+    // v.topTweetOrdinalNumber.innerHTML = ordinalInfo[current][0];
 
     allTweetCircles = document.querySelectorAll('div.item-container');
 
@@ -472,7 +455,7 @@ var topTweetsPresenter = function() {
         window.setTimeout(function() {
           v.topTweet.innerHTML = '';
 
-          current++;
+          !isNewTweet && current++;
           showNext();
         }, options.fading);
       }, options.delay);
@@ -488,7 +471,7 @@ var topTweetsPresenter = function() {
 
 (function() {
   var bank = [
-    'How do you keep up with security threats?',
+/*    'How do you keep up with security threats?',
     'What cyber threat concerns you the most?',
     'How can we build a safer cyber world?',
     'Can you truly be anonymous online? Should you?',
@@ -499,7 +482,7 @@ var topTweetsPresenter = function() {
     'What monitoring strategies you use to identify unusual activity?',
     'Do cyber risks matter to your company?',
     'Is your business prepared for a major breach?',
-    'Are you managing your supply chain risk?'
+    'Are you managing your supply chain risk?'*/
   ], current = 0, cont;
 
   cont = document.querySelector('#question-message');
@@ -519,4 +502,28 @@ var topTweetsPresenter = function() {
 
   change();
   window.setInterval(change, 5 * 60 * 1000); // every 5 minutes
+})();
+
+(function() {
+  var plane;
+
+  plane = document.querySelector('#plane');
+
+  function f() {
+    plane.classList.add('flying');
+
+    window.setTimeout(function() {
+      plane.classList.add('flying-2');
+    }, 5000);
+
+    window.setTimeout(function() {
+      plane.classList.remove('flying');
+      plane.classList.remove('flying-2');
+    }, 7000);
+  }
+
+  if (plane) {
+    window.setInterval(f, 20000);
+    f();
+  }
 })();

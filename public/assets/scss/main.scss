@@ -135,6 +135,14 @@ div.tweeties {
   }
 }
 
+div.top-tweet-container {
+  &.new {
+    div.tweetie {
+      border-color: $gamma !important;
+    }
+  }
+}
+
 div.tweetie {
   border: 3px solid $epsilon;
   border-radius: 5px;
@@ -228,9 +236,10 @@ div.global-title {
   pointer-events: none;
   text-align: center;
   width: 100%;
-  top: 40px;
+  top: 20px;
   left: 0;
   font-size: 4em;
+  text-transform: uppercase;
 }
 
 div.tweeties-prize {
@@ -248,5 +257,25 @@ div.tweeties-prize {
 
   &.visible {
     opacity: 1;
+  }
+}
+
+div.plane {
+  position: absolute;
+  font-size: 5em;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 100%;
+  background: $epsilon;
+  letter-spacing: 0.1em;
+
+  &.flying {
+    left: 0;
+    transition: 2s left;
+  }
+
+  &.flying-2 {
+    left: -100%;
+    transition: 2s left;
   }
 }

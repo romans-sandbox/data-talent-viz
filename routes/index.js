@@ -11,4 +11,9 @@ router.get('/2', function(req, res, next) {
   res.render('2');
 });
 
+// get combo screen
+router.get('/combo', function(req, res, next) {
+  res.render('combo');
+});
+
 module.exports = router;

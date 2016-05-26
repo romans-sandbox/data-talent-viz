@@ -106,7 +106,7 @@ var twitterClient = new Twitter({
 });
 
 var stream = null;
-var track = "#ScotMob";
+var track = "#ComicBookTVShows";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
@@ -203,7 +203,7 @@ function chunk(arr, len) {
 
 function updateTweets(socket) {
   var allIds = [
-    '723067773862158336',
+    /*'723067773862158336',
     '723067726927921153',
     '723067703385313280',
     '723061857708310528',
@@ -223,19 +223,18 @@ function updateTweets(socket) {
     '723069022720413696',
     '723068742838693888',
     '723068971054968832',
-    '723068606087569408'
+    '723068606087569408'*/
   ], idChunks, i;
-console.log(1);
+
   for (i = 0; i < allTweets.length; i++) {
     allIds.push(allTweets[i].id_str);
   }
 
   idChunks = chunk(allIds, 100);
-console.log(2);
-  console.log(idChunks);return;
-  if (idChunks.length) {console.log(3);
-    for (i = 0; i < idChunks.length; i++) {console.log(4);
-      (function(ids, i) {console.log(5);
+
+  if (idChunks.length) {
+    for (i = 0; i < idChunks.length; i++) {
+      (function(ids, i) {
         setTimeout(function() {
           console.log('Requesting tweet updates (' + (i * 100 + 1) + ' to ' + Math.min(allIds.length, i * 100 + 100) + ' of ' + allIds.length + ')...');
 
@@ -365,7 +364,7 @@ io.sockets.on("connection", function(socket) {
         setTimeout(function() {
           updateTweets(socket);
         }, 20 * 1000);
-console.log('???');
+
         console.log('Update tweets timer registered.');
       });
     }
