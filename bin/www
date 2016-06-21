@@ -203,18 +203,20 @@ function chunk(arr, len) {
 
 function updateTweets(socket) {
   var allIds = [
-    'https://twitter.com/mscottmaxwell/status/745147890486542341',
-    'https://twitter.com/glushDV/status/745151643566538752',
-    'https://twitter.com/DataVita_Tweets/status/745151644095045633',
-    'https://twitter.com/Ewan2402/status/745152004029222912',
-    'https://twitter.com/marina_macleod/status/745153047580446723',
-    'https://twitter.com/gordoncoulter/status/745153146524045312',
-    'https://twitter.com/enigmapeople/status/745154487686311936',
-    'https://twitter.com/Balmeri/status/745156248945856512',
-    'https://twitter.com/pcdonnelly77/status/745160291030228993',
-    'https://twitter.com/MarkJHilson/status/745160424673284100',
-    'https://twitter.com/enigmapeople/status/745160642890338304',
-    'https://twitter.com/In_Electronics/status/745160643813089280',
+    '745147890486542341',
+    '745151643566538752',
+    '745151644095045633',
+    '745152004029222912',
+    '745153047580446723',
+    '745153146524045312',
+    '745154487686311936',
+    '745156248945856512',
+    '745160291030228993',
+    '745160424673284100',
+    '745160642890338304',
+    '745160643813089280',
+    '745162857549987840',
+    '745163105240383489',
   ], idChunks, i;
 
   for (i = 0; i < allTweets.length; i++) {
