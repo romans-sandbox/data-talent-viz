@@ -202,7 +202,10 @@ function chunk(arr, len) {
 }
 
 function updateTweets(socket) {
-  var allIds = [/**/], idChunks, i;
+  var allIds = [
+    '781393038597914628',
+    '781403449418248192'
+  ], idChunks, i;
 
   for (i = 0; i < allTweets.length; i++) {
     allIds.push(allTweets[i].id_str);
