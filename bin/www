@@ -106,7 +106,7 @@ var twitterClient = new Twitter({
 });
 
 var stream = null;
-var track = "#ScotSoft2016";
+var track = "#FelizLunes";
 var users = [];
 var latestTweets = null;
 var allTweets = [];
