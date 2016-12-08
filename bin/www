@@ -202,7 +202,7 @@ function chunk(arr, len) {
 }
 
 function updateTweets(socket) {
-  var allIds = ['806645670367084544', '806733804723240960', '806747070769922048', '806774521030004738', '806774967517855747'], idChunks, i;
+  var allIds = ['806645670367084544', '806733804723240960', '806747070769922048', '806774521030004738', '806774967517855747', '806776830724186112'], idChunks, i;
 
   for (i = 0; i < allTweets.length; i++) {
     allIds.push(allTweets[i].id_str);
