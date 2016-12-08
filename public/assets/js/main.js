@@ -16,7 +16,7 @@ d3.selection.prototype.moveToBack = function() {
 var tweetPack = function() {
   var module = {};
 
-  var diameter = 1250;
+  var diameter = 950;
   var margins = {
     top: 20,
     right: 20,
